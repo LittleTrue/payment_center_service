@@ -1,0 +1,25 @@
+{
+    "name": "gxz/payment-center-service",
+    "type": "library",
+    "keywords": [
+        "wechat_pay_national",
+        "alipay_national",
+        "payment_bill_declare"
+    ],
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=5.6",
+        "adbario/php-dot-notation": "^2.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "pimple/pimple": "v2.1.1",
+        "ext-json": "*",
+        "symfony/cache": "^3.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "paymentCenter\\paymentClient\\": "src/client/",
+            "paymentCenter\\paymentService\\": "src/service/",
+            "paymentCenter\\": "src/"
+        }
+    }
+}
