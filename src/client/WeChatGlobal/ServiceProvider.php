@@ -12,7 +12,7 @@ class ServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $app)
     {
-        $app['wechat_pay'] = function ($app) {
+        $app['wechat_global'] = function ($app) {
             return new Client($app);
         };
     }

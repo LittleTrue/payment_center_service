@@ -34,20 +34,30 @@ class BaseClient
     }
 
     /**
-     * 获取特定位数时间戳.
-     * @return int
+     * 产生随机字符串，不长于32位.
+     * @param  int                      $length
+     * @return 产生的随机字符串
      */
-    public function getTimestamp($digits = 10)
+    public function getNonceStr($length = 32)
     {
-        $digits = $digits > 10 ? $digits : 10;
-
-        $digits = $digits - 10;
-
-        if ((!$digits) || (10 == $digits)) {
-            return time();
+        $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        $str   = '';
+        for ($i = 0; $i < $length; ++$i) {
+            $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
         }
+        return $str;
+    }
 
-        return number_format(microtime(true), $digits, '', '') - 50000;
+    /**
+     * 获取毫秒级别的时间戳.
+     */
+    public function getMillisecond()
+    {
+        //获取毫秒的时间戳
+        $time  = explode(' ', microtime());
+        $time  = $time[1] . ($time[0] * 1000);
+        $time2 = explode('.', $time);
+        return $time2[0];
     }
 
     /**
@@ -79,8 +89,6 @@ class BaseClient
      */
     public function httpGet($uri, array $options = [])
     {
-        $options = $this->_headers($options);
-
         return $this->request('GET', $uri, $options);
     }
 
@@ -92,72 +100,5 @@ class BaseClient
     public function httpPostJson($uri)
     {
         return $this->requestPost($uri, [RequestOptions::JSON => $this->json]);
-    }
-
-    /**
-     * Set json params.
-     *
-     * @param array $json Json参数
-     */
-    public function setParams(array $json)
-    {
-        $time = $this->getTimestamp(13);
-
-        //数据公共格式
-        $param = [
-            'data'          => json_encode($json, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            'digest'        => $sign,
-            'timestamp'     => $time,
-            'customerCode'  => $declareConfig['customerCode'],
-            'sitecode'      => $declareConfig['sitecode'],
-            'version'       => 'V1',
-            'serviceBeanId' => 'wmsComApiService'
-        ];
-
-        return $send_string;
-    }
-
-    /**
-     * set Headers.
-     *
-     * @return array
-     */
-    private function _headers(array $options = [])
-    {
-        $time = time();
-
-        $options[RequestOptions::HEADERS] = [
-            'Content-Type' => 'application/json',
-            'timestamp'    => $time,
-        ];
-        return $options;
-    }
-
-    //TODO -- 不同通路各自的请求方法
-
-    /**
-     * 微信通路请求方法
-     * @throws ClientError
-     */
-    protected function weChatRequestPost($uri, array $options = [])
-    {
-        $options = $this->_headers($options);
-
-        //微信验权/加签
-
-        return $this->request('POST', $uri, $options);
-    }
-
-    /**
-     * 支付宝通路请求方法
-     * @throws ClientError
-     */
-    protected function aliPayRequestPost($uri, array $options = [])
-    {
-        $options = $this->_headers($options);
-
-        //支付宝验权/加签
-
-        return $this->request('POST', $uri, $options);
     }
 }

@@ -7,53 +7,70 @@ use paymentCenter\paymentClient\Application;
 /**
  * Class Config.
  */
-class WeChatPayGlobalCredential
+class WeChatPayGlobalCredential extends BaseClient
 {
     use MakesHttpRequests;
 
     private $_secretKey;
 
+    private $_mchId;
+
     public function __construct(Application $app)
     {
         $this->app        = $app;
-        $this->_secretKey = $this->app['config']->get('secretKey');
+        $this->_secretKey = $this->app['config']->get('wx_key');
     }
 
     /**
-     * Get request headers finally.
+     * 生成签名.
+     * @return 签名，本函数不覆盖sign成员变量，如要设置签名需要调用SetSign方法赋值
      */
-    public function getRequestHeaders()
+    public function MakeSign($values, $signType = 'MD5')
     {
-        $time = time();
-        return [
-            'Content-Type' => 'application/json',
-            'timestamp'    => $time,
-        ];
+        //签名步骤一：按字典序排序参数
+        ksort($values);
+        $string = $this->ToUrlParams($values);
+        //签名步骤二：在string后加入KEY
+        $string = $string . '&key=' . $this->_secretKey;
+        //签名步骤三：MD5加密或者HMAC-SHA256
+        if ('MD5' == $signType) {
+            $string = md5($string);
+        } elseif ('HMAC-SHA256' == $signType) {
+            $string = hash_hmac('sha256', $string, $this->_secretKey);
+        } else {
+            throw new ClientError('签名类型不支持！');
+        }
+
+        //签名步骤四：所有字符转为大写
+        return strtoupper($string);
+    }
+
+
+    /**
+     * set Headers.
+     *
+     * @return array
+     */
+    private function setWxGlobalHeaders()
+    {
+        
+
+
+        return $options;
     }
 
     /**
-     * Get request params finally.
+     * 格式化参数格式化成url参数.
      */
-    public function getRequestParams(array $params)
+    public function ToUrlParams($values)
     {
-        ksort($params);
-        $send_data = [
-            'data'      => json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            'timestamp' => time(),
-            'merchId'   => $params['merchId'],
-        ];
+        $buff = '';
+        foreach ($values as $k => $v) {
+            if ('sign' != $k && '' != $v && !is_array($v)) {
+                $buff .= $k . '=' . $v . '&';
+            }
+        }
 
-        $sign_string       = $this->MD5Sign($send_data);
-        $send_data['sign'] = $sign_string;
-
-        return $send_data;
-    }
-
-    //进行MD5加签
-    public function MD5Sign($param)
-    {
-        $secret_key = $this->app['config']->get('secretKey');
-        $string     = $secret_key . 'data' . trim($param['data'], '"') . 'merchId' . $param['merchId'] . 'timestamp' . $param['timestamp'];
-        return strtolower(md5($string));
+        return trim($buff, '&');
     }
 }
