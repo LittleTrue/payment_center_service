@@ -24,6 +24,11 @@ class BaseClient
     protected $json = [];
 
     /**
+     * @var array
+     */
+    protected $param = [];
+
+    /**
      * @var string
      */
     protected $language = 'zh-cn';
@@ -32,6 +37,23 @@ class BaseClient
     {
         $this->app = $app;
     }
+
+    /**
+     * Set params.
+     */
+    public function setJsonParams(array $json)
+    {
+        $this->json = $json;
+    }
+
+    /**
+     * Set params.
+     */
+    public function setParams(array $param)
+    {
+        $this->param = $param;
+    }
+
 
     /**
      * 产生随机字符串，不长于32位.
@@ -89,16 +111,31 @@ class BaseClient
      */
     public function httpGet($uri, array $options = [])
     {
+        $options[RequestOptions::HEADERS] = $this->getRequestHeaders();
         return $this->request('GET', $uri, $options);
     }
 
     /**
-     * Make a post request.
-     *
+     * Get request headers finally.
+     */
+    public function getRequestHeaders()
+    {
+        $time = time();
+
+        return [
+            'Content-Type' => 'application/json',
+            'timestamp'    => $time,
+        ];
+    }
+
+    /**
      * @throws ClientError
      */
-    public function httpPostJson($uri)
+    protected function httpPostJson()
     {
-        return $this->requestPost($uri, [RequestOptions::JSON => $this->json]);
+        $options[RequestOptions::JSON]    = $this->json;
+        $options[RequestOptions::HEADERS] = $this->getRequestHeaders();
+
+        return $this->request('POST', $this->uri, $options);
     }
 }
