@@ -19,8 +19,10 @@ $wechatService   = new WeChatPayGlobalService($ioc_con_app);
 
 //业务参数
 $info = [
-    'customerCode' => 'TT',
-    'sitecode'     => 'TEST01',
+    'body' => 'test',
+    'order_no' => '23131',
+    'order_fee' => '23131',
+    'notify_url' => 'https://www.thinbug.com/q/34726530',
 ];
 
 

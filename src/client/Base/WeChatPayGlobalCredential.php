@@ -2,7 +2,9 @@
 
 namespace paymentCenter\paymentClient\Base;
 
+use GuzzleHttp\RequestOptions;
 use paymentCenter\paymentClient\Application;
+use paymentCenter\paymentClient\Base\Exceptions\ClientError;
 
 /**
  * Class Config.
@@ -17,7 +19,8 @@ class WeChatPayGlobalCredential extends BaseClient
 
     public function __construct(Application $app)
     {
-        $this->app        = $app;
+        $this->app = $app;
+        //初始化各种参数
         $this->_secretKey = $this->app['config']->get('wx_key');
     }
 
@@ -45,20 +48,6 @@ class WeChatPayGlobalCredential extends BaseClient
         return strtoupper($string);
     }
 
-
-    /**
-     * set Headers.
-     *
-     * @return array
-     */
-    private function setWxGlobalHeaders()
-    {
-        
-
-
-        return $options;
-    }
-
     /**
      * 格式化参数格式化成url参数.
      */
@@ -72,5 +61,77 @@ class WeChatPayGlobalCredential extends BaseClient
         }
 
         return trim($buff, '&');
+    }
+
+    /**
+     * (微信SDK) -- 输出xml字符.
+     * @throws WxPayException
+     */
+    public function ToXml($param)
+    {
+        if (!is_array($param) || count($param) <= 0) {
+            throw new ClientError('数组数据异常！');
+        }
+
+        $xml = '<xml>';
+        foreach ($param as $key => $val) {
+            if (is_numeric($val)) {
+                $xml .= '<' . $key . '>' . $val . '</' . $key . '>';
+            } else {
+                $xml .= '<' . $key . '><![CDATA[' . $val . ']]></' . $key . '>';
+            }
+        }
+        $xml .= '</xml>';
+        return $xml;
+    }
+
+    /**
+     * set Headers.
+     *
+     * @return array
+     */
+    public function setWxGlobalHeaders()
+    {
+        $time = time();
+
+        return [
+            'Content-Type' => 'text/xml; charset=UTF8',
+            'timestamp'    => $time,
+        ];
+    }
+
+    /**
+     * post xml.
+     *
+     * @return array
+     */
+    public function requestXmlPost($xml, $certificateFlag = false)
+    {
+        if ($certificateFlag) {
+            //设置PHP-PEM双向通讯证书
+            $options = $this->setApiCert();
+        }
+
+        $options[RequestOptions::HEADERS] = $this->setWxGlobalHeaders();
+        $options[RequestOptions::TIMEOUT] = 30.0;
+        $options[RequestOptions::BODY]    = $xml;
+
+        return $this->FromXml($this->request('POST', $this->url, $options));
+    }
+
+    /**
+     * (微信SDK) -- 将xml转为array.
+     * @throws WxPayException
+     */
+    public function FromXml($xmlResponse)
+    {
+        if (!$xmlResponse) {
+            throw new ClientError('xml数据异常！');
+        }
+
+        //将XML转为array
+        //禁止引用外部xml实体
+        libxml_disable_entity_loader(true);
+        return json_decode(json_encode(simplexml_load_string($xmlResponse, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
     }
 }

@@ -14,6 +14,11 @@ class BaseClient
     use MakesHttpRequests;
 
     /**
+     * @var string
+     */
+    public $url;
+
+    /**
      * @var Application
      */
     protected $app;
@@ -32,6 +37,16 @@ class BaseClient
      * @var string
      */
     protected $language = 'zh-cn';
+
+    /**
+     * @var string SSL证书 PHP版本 CERT  PEM
+     */
+    private $_sslCert;
+
+    /**
+     * @var string SSL证书 PHP版本 KEY PEM
+     */
+    private $_sslKey;
 
     public function __construct(Application $app)
     {
@@ -53,7 +68,6 @@ class BaseClient
     {
         $this->param = $param;
     }
-
 
     /**
      * 产生随机字符串，不长于32位.
@@ -116,6 +130,18 @@ class BaseClient
     }
 
     /**
+     * 证书文件字符串转化为临时文件路径.
+     */
+    public function getTmpPathByContent($content)
+    {
+        static $tmpFile = null;
+        $tmpFile        = tmpfile();
+        fwrite($tmpFile, $content);
+        $tempPemPath = stream_get_meta_data($tmpFile);
+        return $tempPemPath['uri'];
+    }
+
+    /**
      * Get request headers finally.
      */
     public function getRequestHeaders()
@@ -137,5 +163,43 @@ class BaseClient
         $options[RequestOptions::HEADERS] = $this->getRequestHeaders();
 
         return $this->request('POST', $this->uri, $options);
+    }
+
+    /**
+     * set SSL CERT.
+     *
+     * @return array
+     */
+    private function setApiCert()
+    {
+        //识别路径或者字符串, 如果是字符串还需进行换行, 过滤处理
+        if (empty($this->_sslCert) || empty($this->_sslKey)) {
+            throw new ClientError('证书文件缺失。');
+        }
+
+        if (!is_file($this->_sslCert)) {
+            $cert_key_data = file_get_contents($this->_sslCert);
+
+            $cert_key_str = chunk_split($cert_key_data, 64, "\n");
+
+            $cert_key_data = "-----BEGIN RSA PRIVATE KEY-----\n{$cert_key_str}-----END RSA PRIVATE KEY-----\n";
+
+            $this->_sslCert = getTmpPathByContent($cert_key_data);
+        }
+
+        if (!is_file($this->_sslKey)) {
+            $ssl_key_data = file_get_contents($this->_sslKey);
+
+            $ssl_key_str = chunk_split($ssl_key_data, 64, "\n");
+
+            $ssl_key_data = "-----BEGIN RSA PRIVATE KEY-----\n{$ssl_key_str}-----END RSA PRIVATE KEY-----\n";
+
+            $this->_sslCert = getTmpPathByContent($ssl_key_data);
+        }
+
+        $options[RequestOptions::SSL_KEY] = $this->_sslCert;
+        $options[RequestOptions::CERT]    = $this->_sslCert;
+
+        return $options;
     }
 }

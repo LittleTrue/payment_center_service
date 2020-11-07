@@ -10,26 +10,15 @@ use onion\OnionK3cClient\Base\Exceptions\ClientError;
  */
 trait MakesHttpRequests
 {
-    /**
-     * @var bool
-     */
-    protected $transform = true;
-
-    /**
-     * @var string
-     */
-    protected $baseUri = '';
 
     /**
      * @throws ClientError
      */
-    public function request($method, $uri, array $options = [])
+    public function request($method, $url, array $options = [])
     {
-        $uri = $this->app['config']->get('base_uri') . $uri;
+        $response = $this->app['http_client']->request($method, $url, $options);
 
-        $response = $this->app['http_client']->request($method, $uri, $options);
-
-        return $this->transform ? $this->transformResponse($response) : $response;
+        return $this->transformResponse($response);
     }
 
     /**
@@ -39,11 +28,11 @@ trait MakesHttpRequests
     {
         if (200 != $response->getStatusCode()) {
             throw new ClientError(
-                "接口连接异常，异常码：{$response->getStatusCode()}，异常信息:" . json_decode($response->getBody()->getContents(), true),
+                "接口连接异常，异常码：{$response->getStatusCode()}, 异常信息:" . $response->getBody()->getContents(),
                 $response->getStatusCode()
             );
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        return $response->getBody()->getContents();
     }
 }

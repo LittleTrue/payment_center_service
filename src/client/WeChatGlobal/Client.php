@@ -74,6 +74,9 @@ class Client extends WeChatPayGlobalCredential
      */
     public function qrCodePay($data)
     {
+        //设置方法接口路由
+        $this->url = $this->unified_order_url;
+
         // $this->credentialValidate->setRule(
         //     [
         //         'MessageID'    => 'require|max:36',
@@ -100,6 +103,7 @@ class Client extends WeChatPayGlobalCredential
         //     throw new ClientError('参数错误:' . $this->credentialValidate->getError());
         // }
 
+
         //生成商品备案包报文
         $payment_arr = [
             'appid'            => $this->_weChatPayGlobalConfig['wx_appid'],
@@ -109,7 +113,7 @@ class Client extends WeChatPayGlobalCredential
             'out_trade_no'     => $data['order_no'],
             'fee_type'         => 'CNY',
             'total_fee'        => $data['order_fee'],
-            'spbill_create_ip' => $_SERVER['REMOTE_ADDR'],
+            'spbill_create_ip' => empty($_SERVER['REMOTE_ADDR'])? '0.0.0.0': $_SERVER['REMOTE_ADDR'],
             'notify_url'       => $data['notify_url'],
             'trade_type'       => 'JSAPI',
         ];
@@ -119,14 +123,16 @@ class Client extends WeChatPayGlobalCredential
         $param = $this->ToXml($payment_arr);
 
         //触发请求
-
+        return $this->requestXmlPost($param);
     }
 
     /**
      * 订单查询.
      */
     public function orderQuery($data)
-    {
+    {  
+        //设置方法接口路由
+        $this->url = $this->order_query_url;
     }
 
     /**
@@ -134,6 +140,20 @@ class Client extends WeChatPayGlobalCredential
      */
     public function orderRefund($data)
     {
+        //设置方法接口路由
+        $this->url = $this->refund_order_url;
+    }
+
+    
+    /**
+     * 订单退款查询.
+     */
+    public function orderRefundQuery($data)
+    {
+        //设置方法接口路由
+        $this->url = $this->refund_query_url;
+
+        
     }
 
     /**
@@ -141,6 +161,9 @@ class Client extends WeChatPayGlobalCredential
      */
     public function orderCustoms($data)
     {
+        //设置方法接口路由
+        $this->url = $this->customs_order_url;
+
         $param_arr = [
             'appid'          => $this->_weChatPayGlobalConfig['wx_appid'],
             'mch_id'         => $this->_weChatPayGlobalConfig['wx_mchid'],
@@ -160,29 +183,31 @@ class Client extends WeChatPayGlobalCredential
      */
     public function orderCustomsQuery($data)
     {
+        //设置方法接口路由
+        $this->url = $this->customs_query_url;
+
+
     }
 
     /**
-     * (微信SDK) -- 输出xml字符.
-     * @throws WxPayException
+     * 订单海关报关重推.
      */
-    public function ToXml($param)
+    public function orderCustomsRedeclare($data)
     {
-        if (!is_array($param) || count($param) <= 0) {
-            throw new ClientError('数组数据异常！');
-        }
+        //设置方法接口路由
+        $this->url = $this->customs_redeclare_url;
 
-        $xml = '<xml>';
-        foreach ($param as $key => $val) {
-            if (is_numeric($val)) {
-                $xml .= '<' . $key . '>' . $val . '</' . $key . '>';
-            } else {
-                $xml .= '<' . $key . '><![CDATA[' . $val . ']]></' . $key . '>';
-            }
-        }
-        $xml .= '</xml>';
-        return $xml;
+        
     }
 
- 
+    /**
+     * 身份证验证.
+     */
+    public function orderPersonVerify($data)
+    {
+        //设置方法接口路由
+        $this->url = $this->verify_person_url;
+
+        
+    }
 }
