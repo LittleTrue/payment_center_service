@@ -7,21 +7,43 @@ use paymentCenter\paymentClient\Application;
 use paymentCenter\paymentClient\Base\Exceptions\ClientError;
 
 /**
- * Class Config.
+ * 微信国际通路 -- 验权/加签, 初始化, 业务支持类.
  */
 class WeChatPayGlobalCredential extends BaseClient
 {
     use MakesHttpRequests;
 
-    private $_secretKey;
+    //通路参数
+    protected $secretKey;
 
-    private $_mchId;
+    protected $mchId;
+
+    protected $appId;
+
+    protected $apiClientCert;
+
+    protected $apiClientKey;
+
+    protected $custom;
+
+    protected $customNo;
 
     public function __construct(Application $app)
     {
         $this->app = $app;
-        //初始化各种参数
-        $this->_secretKey = $this->app['config']->get('wx_key');
+
+        //初始化基础参数
+        $this->secretKey = $this->app['config']->get('wx_key');
+        $this->mchId     = $this->app['config']->get('wx_mchid');
+        $this->appId     = $this->app['config']->get('wx_appid');
+
+        //证书参数
+        $this->apiClientCert = $this->app['config']->get('wx_apiclient_cert');
+        $this->apiClientKey  = $this->app['config']->get('wx_apiclient_key');
+
+        //报关参数
+        $this->custom   = $this->app['config']->get('custom');
+        $this->customNo = $this->app['config']->get('custom_no');
     }
 
     /**
@@ -34,12 +56,12 @@ class WeChatPayGlobalCredential extends BaseClient
         ksort($values);
         $string = $this->ToUrlParams($values);
         //签名步骤二：在string后加入KEY
-        $string = $string . '&key=' . $this->_secretKey;
+        $string = $string . '&key=' . $this->secretKey;
         //签名步骤三：MD5加密或者HMAC-SHA256
         if ('MD5' == $signType) {
             $string = md5($string);
         } elseif ('HMAC-SHA256' == $signType) {
-            $string = hash_hmac('sha256', $string, $this->_secretKey);
+            $string = hash_hmac('sha256', $string, $this->secretKey);
         } else {
             throw new ClientError('签名类型不支持！');
         }
@@ -120,8 +142,30 @@ class WeChatPayGlobalCredential extends BaseClient
     }
 
     /**
+     * 解析回执参数 -- 判断通讯和业务状态.
+     * @throws ClientError
+     */
+    public function parsingResponse($response)
+    {
+        //第一层 -- 请求及通讯层状态 -- 扔出错误, 该种类型的错误, 不需要业务参与, 属于调试阶段的对接问题
+        if ('SUCCESS' != $response['return_code']) {
+            foreach ($response as $key => $value) {
+                //除了return_code和return_msg之外其他的参数存在，则报错
+                if ('return_code' != $key && 'return_msg' != $key) {
+                    throw new ClientError('返回数据存在异常！');
+                }
+            }
+
+            throw new ClientError($response['return_msg']);
+        }
+
+        //第二层 -- 返回业务内容以供业务层解析
+        return $response;
+    }
+
+    /**
      * (微信SDK) -- 将xml转为array.
-     * @throws WxPayException
+     * @throws ClientError
      */
     public function FromXml($xmlResponse)
     {

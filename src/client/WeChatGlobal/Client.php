@@ -17,11 +17,6 @@ class Client extends WeChatPayGlobalCredential
     protected $credentialValidate;
 
     /**
-     * @var Application
-     */
-    private $_weChatPayGlobalConfig;
-
-    /**
      * @var string 统一下单接口
      */
     private $unified_order_url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
@@ -66,7 +61,6 @@ class Client extends WeChatPayGlobalCredential
         parent::__construct($app);
 
         $this->credentialValidate     = $app['validator'];
-        $this->_weChatPayGlobalConfig = $app['config'];
     }
 
     /**
@@ -77,6 +71,7 @@ class Client extends WeChatPayGlobalCredential
         //设置方法接口路由
         $this->url = $this->unified_order_url;
 
+        //验证参数
         // $this->credentialValidate->setRule(
         //     [
         //         'MessageID'    => 'require|max:36',
@@ -106,8 +101,8 @@ class Client extends WeChatPayGlobalCredential
 
         //生成商品备案包报文
         $payment_arr = [
-            'appid'            => $this->_weChatPayGlobalConfig['wx_appid'],
-            'mch_id'           => $this->_weChatPayGlobalConfig['wx_mchid'],
+            'appid'            => $this->appId,
+            'mch_id'           => $this->mchId,
             'nonce_str'        => $this->getNonceStr(),
             'body'             => $data['body'],
             'out_trade_no'     => $data['order_no'],
@@ -115,7 +110,7 @@ class Client extends WeChatPayGlobalCredential
             'total_fee'        => $data['order_fee'],
             'spbill_create_ip' => empty($_SERVER['REMOTE_ADDR'])? '0.0.0.0': $_SERVER['REMOTE_ADDR'],
             'notify_url'       => $data['notify_url'],
-            'trade_type'       => 'JSAPI',
+            'trade_type'       => 'NATIVE',
         ];
 
         $payment_arr['sign'] = $this->MakeSign($payment_arr);
@@ -165,12 +160,12 @@ class Client extends WeChatPayGlobalCredential
         $this->url = $this->customs_order_url;
 
         $param_arr = [
-            'appid'          => $this->_weChatPayGlobalConfig['wx_appid'],
-            'mch_id'         => $this->_weChatPayGlobalConfig['wx_mchid'],
+            'appid'          => $this->appId,
+            'mch_id'         => $this->mchId,
             'out_trade_no'   => $data['EntOrderNo'],
             'transaction_id' => $data['EntPayNo'],
-            'customs'        => $this->_weChatPayGlobalConfig['custom'],
-            'mch_customs_no' => $this->_weChatPayGlobalConfig['custom_no'],
+            'customs'        => $this->custom,
+            'mch_customs_no' => $this->customNo,
             //2019年5月13日 微信验证监管对象 需要上传的字段
             'cert_type' => 'IDCARD',
             'cert_id'   => $data['OrderDocId'],
