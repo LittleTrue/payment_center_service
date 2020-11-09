@@ -130,6 +130,9 @@ class WeChatPayGlobalCredential extends BaseClient
     public function requestXmlPost($xml, $certificateFlag = false)
     {
         if ($certificateFlag) {
+            $this->setSslCert($this->apiClientCert);
+            $this->setSslKey($this->apiClientKey);
+
             //设置PHP-PEM双向通讯证书
             $options = $this->setApiCert();
         }
