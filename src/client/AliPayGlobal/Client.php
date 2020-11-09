@@ -99,22 +99,22 @@ class Client extends AliPayGlobalCredential
         $this->url = $this->request_url;
 
         //验证参数
-        $this->credentialValidate->setRule(
-            [
-                'out_request_no' => 'require|max:32',
-                'trade_no' => 'require|max:64',
-                'merchant_customs_code' => 'require|max:20',
-                'amount' => 'require',
-                'customs_place' => 'require|max:20',
-                'merchant_customs_name' => 'require|max:256',
-                'buyer_name' => 'max:10',
-                'buyer_id_no' => 'max:18',
-            ]
-        );
+        // $this->credentialValidate->setRule(
+        //     [
+        //         'out_request_no' => 'require|max:32',
+        //         'trade_no' => 'require|max:64',
+        //         'merchant_customs_code' => 'require|max:20',
+        //         'amount' => 'require',
+        //         'customs_place' => 'require|max:20',
+        //         'merchant_customs_name' => 'require|max:256',
+        //         'buyer_name' => 'max:10',
+        //         'buyer_id_no' => 'max:18',
+        //     ]
+        // );
 
-        if (!$this->credentialValidate->check($data)) {
-            throw new ClientError('参数错误：'.$this->credentialValidate->getError());
-        }
+        // if (!$this->credentialValidate->check($data)) {
+        //     throw new ClientError('参数错误：'.$this->credentialValidate->getError());
+        // }
 
         //生成发送数据
         $param = [
@@ -131,7 +131,7 @@ class Client extends AliPayGlobalCredential
             'buyer_name' => isset($data['buyer_name']) ? $data['buyer_name'] : '',
             'buyer_id_no' => isset($data['buyer_id_no']) ? $data['buyer_id_no'] : '',
         ];
-
+        
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求

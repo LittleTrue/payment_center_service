@@ -68,11 +68,7 @@ class AliPayGlobalService
         if (empty($data)) {
             throw new ClientError('参数缺失');
         } 
-
-        if (empty($signType)) {
-            throw new ClientError('签名类型缺失');
-        }
-
+        
         return $this->_aliPayGlobal->orderCustoms($data);
     }
 
