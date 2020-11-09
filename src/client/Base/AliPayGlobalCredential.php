@@ -12,12 +12,15 @@ class AliPayGlobalCredential extends BaseClient
 {
     use MakesHttpRequests;
 
-    private $_secretKey;
+    protected $_secretKey;
+
+    protected $_partnerId;
 
     public function __construct(Application $app)
     {
         $this->app        = $app;
         $this->_secretKey = $this->app['config']->get('key');
+        $this->_partnerId = $this->app['config']->get('partner_id');
     }
 
     /**
@@ -53,8 +56,6 @@ class AliPayGlobalCredential extends BaseClient
     //进行MD5加签
     public function MD5Sign($param)
     {
-        $secret_key = $this->app['config']->get('secretKey');
-
         ksort($param);
 
         $string = '';
@@ -67,7 +68,7 @@ class AliPayGlobalCredential extends BaseClient
 
         $string = trim($string, '&');
 
-        return strtolower(md5($string . $secret_key));
+        return strtolower(md5($string . $this->_secretKey));
     }
 
     public function requestPost($param)
@@ -84,8 +85,9 @@ class AliPayGlobalCredential extends BaseClient
 
         $string = trim($string, '&');
 
-        $options[RequestOptions::HEADERS] = $string;
+        $options[RequestOptions::TIMEOUT] = 30.0;
 
-        return $this->request('GET', $this->url, $options);
+        file_put_contents('./response.html',$this->request('GET', $this->url . '?' . $string));
+        return 'OK';
     }
 }

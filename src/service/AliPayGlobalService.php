@@ -22,11 +22,11 @@ class AliPayGlobalService
 
         //通用参数验证
         if (!isset($config_param['partner_id']) || empty($config_param['partner_id'])) {
-            throw new Exception('partner_id不能为空');
+            throw new ClientError('partner_id不能为空');
         }
 
         if (!isset($config_param['key']) || empty($config_param['key'])) {
-            throw new Exception('key不能为空');
+            throw new ClientError('key不能为空');
         }
     }
 
@@ -36,11 +36,11 @@ class AliPayGlobalService
     public function qrCodePay($data, $signType = 'MD5')
     {
         if (empty($data)) {
-            throw new Exception('参数缺失');
+            throw new ClientError('参数缺失');
         } 
 
         if (empty($signType)) {
-            throw new Exception('签名类型缺失');
+            throw new ClientError('签名类型缺失');
         }
 
         return $this->_aliPayGlobal->qrCodePay($data);
@@ -65,6 +65,15 @@ class AliPayGlobalService
      */
     public function orderCustoms($data)
     {
+        if (empty($data)) {
+            throw new ClientError('参数缺失');
+        } 
+
+        if (empty($signType)) {
+            throw new ClientError('签名类型缺失');
+        }
+
+        return $this->_aliPayGlobal->orderCustoms($data);
     }
 
     /**
