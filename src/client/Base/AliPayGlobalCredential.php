@@ -1,13 +1,14 @@
 <?php
-
 namespace paymentCenter\paymentClient\Base;
 
+use GuzzleHttp\RequestOptions;
 use paymentCenter\paymentClient\Application;
+use paymentCenter\paymentClient\Base\Exceptions\ClientError;
 
 /**
  * Class Config.
  */
-class AliPayGlobalCredential
+class AliPayGlobalCredential extends BaseClient
 {
     use MakesHttpRequests;
 
@@ -16,7 +17,7 @@ class AliPayGlobalCredential
     public function __construct(Application $app)
     {
         $this->app        = $app;
-        $this->_secretKey = $this->app['config']->get('secretKey');
+        $this->_secretKey = $this->app['config']->get('key');
     }
 
     /**
@@ -53,7 +54,38 @@ class AliPayGlobalCredential
     public function MD5Sign($param)
     {
         $secret_key = $this->app['config']->get('secretKey');
-        $string     = $secret_key . 'data' . trim($param['data'], '"') . 'merchId' . $param['merchId'] . 'timestamp' . $param['timestamp'];
-        return strtolower(md5($string));
+
+        ksort($param);
+
+        $string = '';
+
+        foreach ($param as $key => $value) {
+            if ('' != $value && 'sign' != $value && 'signType' != $key) {
+                $string .= $key . '=' . $value . '&';
+            }
+        }
+
+        $string = trim($string, '&');
+
+        return strtolower(md5($string . $secret_key));
+    }
+
+    public function requestPost($param)
+    {
+        ksort($param);
+
+        $string = '';
+
+        foreach ($param as $key => $value) {
+            if ('' != $value && 'sign' != $value && 'signType' != $key) {
+                $string .= $key . '=' . $value . '&';
+            }
+        }
+
+        $string = trim($string, '&');
+
+        $options[RequestOptions::HEADERS] = $string;
+
+        return $this->request('GET', $this->url, $options);
     }
 }
