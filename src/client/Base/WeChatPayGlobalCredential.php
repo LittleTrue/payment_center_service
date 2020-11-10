@@ -30,6 +30,8 @@ class WeChatPayGlobalCredential extends BaseClient
 
     public function __construct(Application $app)
     {
+        parent::__construct($app);
+
         $this->app = $app;
 
         //初始化基础参数
@@ -180,5 +182,34 @@ class WeChatPayGlobalCredential extends BaseClient
         //禁止引用外部xml实体
         libxml_disable_entity_loader(true);
         return json_decode(json_encode(simplexml_load_string($xmlResponse, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    }
+
+    /**
+     * 签名
+     */
+    public function sign($body)
+    {
+        $mch_private_key = file_get_contents($this->apiClientKey);
+        $url_parts = parse_url($this->url);
+        $nonce = $this->getNonceStr();
+        $timestamp = time();
+
+        $canonical_url = ($url_parts['path'] . (!empty($url_parts['query']) ? "?${url_parts['query']}" : ""));
+
+        $message = 'POST'."\n".
+            $canonical_url."\n".
+            $timestamp ."\n".
+            $nonce ."\n".
+            $body."\n";
+
+        openssl_sign($message, $raw_sign, $mch_private_key, 'sha256WithRSAEncryption');
+
+        $sign = base64_encode($raw_sign);
+        
+        $serial_no = openssl_x509_parse(file_get_contents($this->apiClientCert));
+
+        $token = sprintf('mchid="%s",nonce_str="%s",timestamp="%d",serial_no="%s",signature="%s"',$this->mchId, $nonce, $timestamp, $serial_no['serialNumberHex'], $sign);
+
+        return 'WECHATPAY2-SHA256-RSA2048 ' . $token;
     }
 }

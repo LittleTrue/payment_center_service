@@ -92,9 +92,6 @@ $wechatService   = new WeChatPayGlobalService($ioc_con_app);
 $info = [
     'EntOrderNo'   => '10000001',
     'EntPayNo' => '4200000738202011092400680961',
-    //2019年5月13日 微信验证监管对象 需要上传的字段
-    'OrderDocId'        => '440583199705234511',
-    'OrderDocName'           => '陈子安',
 ];
 
 try {
@@ -102,5 +99,5 @@ try {
 } catch(Exception $e) {
     var_dump($e->getMessage());die();
 }
-echo json_encode($tmp);
+var_dump($tmp);die();
 die();

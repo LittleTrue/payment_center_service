@@ -39,7 +39,7 @@ class Client extends WeChatPayGlobalCredential
     /**
      * @var string 报关申报 -- 需要报关备案信息
      */
-    private $customs_order_url = 'https://api.mch.weixin.qq.com/hk/v3/transactions/app'; //https://apihk.mch.weixin.qq.com/global/v3/customs/orders
+    private $customs_order_url = 'https://api.mch.weixin.qq.com/global/v3/customs/orders';
 
     /**
      * @var string 报关查询 
@@ -251,23 +251,21 @@ class Client extends WeChatPayGlobalCredential
         $this->url = $this->customs_order_url;
 
         $param_arr = [
-            'appid'          => $this->appId,
-            'mch_id'         => $this->mchId,
-            'out_trade_no'   => $data['EntOrderNo'],
-            'transaction_id' => $data['EntPayNo'],
-            'customs'        => $this->custom,
-            'mch_customs_no' => $this->customNo,
-            //2019年5月13日 微信验证监管对象 需要上传的字段
-            'cert_type' => 'IDCARD',
-            'cert_id'   => $data['OrderDocId'],
-            'name'      => $data['OrderDocName'],
+            'appid'                 => $this->appId,
+            'mchid'                 => $this->mchId,
+            'out_trade_no'          => $data['EntOrderNo'],
+            'transaction_id'        => $data['EntPayNo'],
+            'customs'               => $this->custom,
+            'merchant_customs_no'   => $this->customNo,
+            'fee_type'              => 'CNY',
         ];
 
-        $sign = $this->MakeSign($param_arr, 'HMAC-SHA256');
+        $auth = $this->sign(json_encode($param_arr, JSON_UNESCAPED_UNICODE));
 
         $this->setJsonParams($param_arr);
 
-        //触发请求
+        $this->setHeaders(['Authorization' => $auth]);
+
         return $this->httpPostJson();
     }
 
@@ -278,8 +276,6 @@ class Client extends WeChatPayGlobalCredential
     {
         //设置方法接口路由
         $this->url = $this->customs_query_url;
-
-
     }
 
     /**
@@ -289,8 +285,6 @@ class Client extends WeChatPayGlobalCredential
     {
         //设置方法接口路由
         $this->url = $this->customs_redeclare_url;
-
-        
     }
 
     /**
@@ -300,7 +294,5 @@ class Client extends WeChatPayGlobalCredential
     {
         //设置方法接口路由
         $this->url = $this->verify_person_url;
-
-
     }
 }
