@@ -1,5 +1,12 @@
 <?php
-
+/*
+ * @Description: 
+ * @Version: 
+ * @Author: Yan
+ * @Date: 2020-11-09 10:32:36
+ * @LastEditors: Yan
+ * @LastEditTime: 2020-11-10 11:38:47
+ */
 namespace paymentCenter\paymentService;
 
 use paymentCenter\paymentClient\Application;
@@ -51,6 +58,11 @@ class AliPayGlobalService
      */
     public function orderQuery($data)
     {
+        if (empty($data)) {
+            throw new ClientError('参数缺失');
+        } 
+        
+        return $this->_aliPayGlobal->orderQuery($data);
     }
 
     /**
@@ -58,6 +70,11 @@ class AliPayGlobalService
      */
     public function orderRefund($data)
     {
+        if (empty($data)) {
+            throw new ClientError('参数缺失');
+        } 
+        
+        return $this->_aliPayGlobal->orderRefund($data);
     }
 
     /**
@@ -77,5 +94,22 @@ class AliPayGlobalService
      */
     public function orderCustomsQuery($data)
     {
+        if (empty($data)) {
+            throw new ClientError('参数缺失');
+        } 
+        
+        return $this->_aliPayGlobal->orderCustomsQuery($data);
+    }
+
+    /**
+     * 退款查询
+     */
+    public function refundQuery($data)
+    {
+        if (empty($data)) {
+            throw new ClientError('参数缺失');
+        } 
+        
+        return $this->_aliPayGlobal->refundQuery($data);
     }
 }

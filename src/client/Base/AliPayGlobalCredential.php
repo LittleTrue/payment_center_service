@@ -87,10 +87,22 @@ class AliPayGlobalCredential extends BaseClient
 
         $options[RequestOptions::TIMEOUT] = 30.0;
 
-        file_put_contents('./response.html',$this->request('GET', $this->url . '?' . $string));
+        return $this->request('GET', $this->url . '?' . $string);
+    }
 
-        //to do list
-        //直接返回，然调用端解析响应。因为支付宝的不同接口，有不同格式的响应
-        return 'OK';
+    /**
+     * 将xml转为array.
+     * @throws ClientError
+     */
+    public function FromXml($xmlResponse)
+    {
+        if (!$xmlResponse) {
+            throw new ClientError('xml数据异常！');
+        }
+
+        //将XML转为array
+        //禁止引用外部xml实体
+        libxml_disable_entity_loader(true);
+        return json_decode(json_encode(simplexml_load_string($xmlResponse, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
     }
 }
