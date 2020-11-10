@@ -209,7 +209,7 @@ class Validator
      */
     public function setRule(array $rules)
     {
-        $this->rule = $this->rule;
+        $this->rule = $rules;
     }
 
     /**
