@@ -34,6 +34,11 @@ class BaseClient
     protected $param = [];
 
     /**
+     * @var array
+     */
+    protected $headers = [];
+
+    /**
      * @var string
      */
     protected $language = 'zh-cn';
@@ -51,6 +56,13 @@ class BaseClient
     public function __construct(Application $app)
     {
         $this->app = $app;
+
+        $this->headers = [
+            'Content-Type'  => 'application/json',
+            'timestamp'     => time(),
+            'User-Agent'    => '',
+            'Accept'        => '*/*'
+        ];
     }
 
     /**
@@ -162,12 +174,7 @@ class BaseClient
      */
     public function getRequestHeaders()
     {
-        $time = time();
-
-        return [
-            'Content-Type' => 'application/json',
-            'timestamp'    => $time,
-        ];
+        return $this->headers;
     }
 
 
@@ -215,5 +222,10 @@ class BaseClient
         $options[RequestOptions::CERT]    = $this->_sslCert;
 
         return $options;
+    }
+
+    public function setHeaders(array $param)
+    {
+        $this->headers[key($param)] = $param[key($param)];
     }
 }
