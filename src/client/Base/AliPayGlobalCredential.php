@@ -61,7 +61,7 @@ class AliPayGlobalCredential extends BaseClient
         $string = '';
 
         foreach ($param as $key => $value) {
-            if ('' != $value && 'sign' != $value && 'signType' != $key) {
+            if ('' != $value && 'sign' != $value && 'sign_type' != $key) {
                 $string .= $key . '=' . $value . '&';
             }
         }
@@ -78,7 +78,7 @@ class AliPayGlobalCredential extends BaseClient
         $string = '';
 
         foreach ($param as $key => $value) {
-            if ('' != $value && 'sign' != $value && 'signType' != $key) {
+            if ('' != $value && 'sign' != $value && 'sign_type' != $key) {
                 $string .= $key . '=' . $value . '&';
             }
         }
