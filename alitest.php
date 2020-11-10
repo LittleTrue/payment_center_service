@@ -5,7 +5,7 @@
  * @Author: Yan
  * @Date: 2020-11-09 10:37:39
  * @LastEditors: Yan
- * @LastEditTime: 2020-11-10 11:38:16
+ * @LastEditTime: 2020-11-10 15:44:24
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -34,7 +34,7 @@ $aliPayService   = new AliPayGlobalService($ioc_con_app);
 //     'rmb_fee' => 166,
 //     'refer_url' =>  'http://xxx',
 //     'product_code' => 'OP330090',
-//     'notify_url' => '',
+//     'notify_url' => 'http://yyy',
 //     'return_url' => '',
 //     'trade_information' => [
 //         'business_type' => 4,
@@ -106,8 +106,8 @@ $aliPayService   = new AliPayGlobalService($ioc_con_app);
 
 //退款查询测试
 $info = [
-    'out_trade_no' => '',
-    'out_return_no' => '',
+    'out_trade_no' => '111',
+    'out_return_no' => '111',
 ];
 $tmp = $aliPayService->refundQuery($info);
 var_dump($tmp);
