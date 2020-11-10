@@ -126,5 +126,26 @@ class WeChatPayGlobalService
      */
     public function orderCustomsQuery($data)
     {
+        if (!isset($this->_weChatPayGlobalConfig['custom']) || empty($this->_weChatPayGlobalConfig['custom'])) {
+            throw new Exception('微信报关所选海关缺失');
+        }
+
+        return $this->_weChatPayGlobal->orderCustomsQuery($data);
+    }
+
+    /**
+     * 身份校验.
+     */
+    public function orderPersonVerify($data)
+    {
+        if (!isset($this->_weChatPayGlobalConfig['custom']) || empty($this->_weChatPayGlobalConfig['custom'])) {
+            throw new Exception('微信报关所选海关缺失');
+        }
+
+        if (!isset($this->_weChatPayGlobalConfig['custom_no']) || empty($this->_weChatPayGlobalConfig['custom_no'])) {
+            throw new Exception('微信支报关所对应海关编号缺失');
+        }
+
+        return $this->_weChatPayGlobal->orderPersonVerify($data);
     }
 }

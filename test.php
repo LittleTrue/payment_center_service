@@ -9,19 +9,18 @@ use paymentCenter\paymentService\WeChatPayGlobalService;
 $config = [
     'wx_appid' => 'wxd6245dfb69943281',
     'wx_key'   => '9bb369aab99f0523e69190231282d237',
-    'wx_mchid'   => '1510197911',
+    'wx_mchid' => '1510197911',
 
     'custom_no' => '4601640011',
     'custom'    => 'GUANGZHOU_ZS',
 
     'wx_apiclient_key'  => 'G:/wamp64/www/apiclient_key.pem',
-    'wx_apiclient_cert' => 'G:/wamp64/www/apiclient_cert.pem'
+    'wx_apiclient_cert' => 'G:/wamp64/www/apiclient_cert.pem',
 ];
-
 
 $ioc_con_app = new Application($config);
 
-$wechatService   = new WeChatPayGlobalService($ioc_con_app);
+$wechatService = new WeChatPayGlobalService($ioc_con_app);
 
 //业务参数
 // $info = [
@@ -31,8 +30,6 @@ $wechatService   = new WeChatPayGlobalService($ioc_con_app);
 //     'notify_url' => 'https://www.thinbug.com/q/34726530',
 // ];
 
-
-
 // $tmp = $wechatService->qrCodePay($info);
 // var_dump($tmp);
 // die();
@@ -41,7 +38,6 @@ $wechatService   = new WeChatPayGlobalService($ioc_con_app);
 // $info = [
 //     'order_no' => '10000001',
 // ];
-
 
 // try {
 //     $tmp = $wechatService->orderQuery($info);
@@ -60,7 +56,6 @@ $wechatService   = new WeChatPayGlobalService($ioc_con_app);
 //     'refund_fee_type'   => '',
 //     'refund_desc'       => '123',
 // ];
-
 
 // try {
 //     $tmp = $wechatService->orderRefund($info);
@@ -89,15 +84,48 @@ $wechatService   = new WeChatPayGlobalService($ioc_con_app);
 // die();
 
 //支付单报关
+// $info = [
+//     'EntOrderNo'   => '10000001',
+//     'EntPayNo' => '4200000738202011092400680961',
+// ];
+
+// try {
+//     $tmp = $wechatService->orderCustoms($info);
+// } catch(Exception $e) {
+//     var_dump($e->getMessage());die();
+// }
+// var_dump($tmp);die();
+// die();
+
+//查询报关
+// $info = [
+//     'order_no'   => '10000001',
+//     'order_type' => 'out_trade_no', //out_trade_no-商家订单号 transaction_id-微信支付订单号 sub_order_no-商家子订单号 sub_order_id-微信子订单号
+// ];
+
+// try {
+    // $tmp = $wechatService->orderCustomsQuery($info);
+// } catch(Exception $e) {
+//     var_dump($e->getMessage());die();
+// }
+// var_dump($tmp);die();
+// die();
+
+//身份验证
 $info = [
-    'EntOrderNo'   => '10000001',
-    'EntPayNo' => '4200000738202011092400680961',
+    'EntOrderNo'     => '10000001',
+    'EntPayNo'       => '4200000738202011092400680961',
+    'sub_order_no'   => '',
+    'order_doc_id'  => '440583199705234511',
+    'order_doc_name' => '陈子安',
+    'cert_type'      => 'IDCARD', //out_trade_no-商家订单号 transaction_id-微信支付订单号 sub_order_no-商家子订单号 sub_order_id-微信子订单号
 ];
 
 try {
-    $tmp = $wechatService->orderCustoms($info);
-} catch(Exception $e) {
-    var_dump($e->getMessage());die();
+    $tmp = $wechatService->orderPersonVerify($info);
+} catch (Exception $e) {
+    var_dump($e->getMessage());
+    die();
 }
-var_dump($tmp);die();
+var_dump($tmp); die();
 die();
