@@ -1,5 +1,4 @@
 <?php
-
 namespace paymentCenter\paymentClient\Base;
 
 use GuzzleHttp\Psr7\Response;

@@ -70,6 +70,22 @@ class BaseClient
     }
 
     /**
+     * Set SslCert.
+     */
+    public function setSslCert(string $cert)
+    {
+        $this->_sslCert = $cert;
+    }
+
+    /**
+     * Set SslKey.
+     */
+    public function setSslKey(string $key)
+    {
+        $this->_sslKey = $key;
+    }
+
+    /**
      * 产生随机字符串，不长于32位.
      * @param  int                      $length
      * @return 产生的随机字符串
@@ -154,6 +170,8 @@ class BaseClient
         ];
     }
 
+
+
     /**
      * @throws ClientError
      */
@@ -162,7 +180,7 @@ class BaseClient
         $options[RequestOptions::JSON]    = $this->json;
         $options[RequestOptions::HEADERS] = $this->getRequestHeaders();
 
-        return $this->request('POST', $this->uri, $options);
+        return $this->request('POST', $this->url, $options);
     }
 
     /**
@@ -170,7 +188,7 @@ class BaseClient
      *
      * @return array
      */
-    private function setApiCert()
+    protected function setApiCert()
     {
         //识别路径或者字符串, 如果是字符串还需进行换行, 过滤处理
         if (empty($this->_sslCert) || empty($this->_sslKey)) {
@@ -178,26 +196,22 @@ class BaseClient
         }
 
         if (!is_file($this->_sslCert)) {
-            $cert_key_data = file_get_contents($this->_sslCert);
-
-            $cert_key_str = chunk_split($cert_key_data, 64, "\n");
+            $cert_key_str = chunk_split($this->_sslCert, 64, "\n");
 
             $cert_key_data = "-----BEGIN RSA PRIVATE KEY-----\n{$cert_key_str}-----END RSA PRIVATE KEY-----\n";
 
-            $this->_sslCert = getTmpPathByContent($cert_key_data);
+            $this->_sslCert = $this->getTmpPathByContent($cert_key_data);
         }
 
         if (!is_file($this->_sslKey)) {
-            $ssl_key_data = file_get_contents($this->_sslKey);
-
-            $ssl_key_str = chunk_split($ssl_key_data, 64, "\n");
+            $ssl_key_str = chunk_split($this->_sslKey, 64, "\n");
 
             $ssl_key_data = "-----BEGIN RSA PRIVATE KEY-----\n{$ssl_key_str}-----END RSA PRIVATE KEY-----\n";
 
-            $this->_sslCert = getTmpPathByContent($ssl_key_data);
+            $this->_sslCert = $this->getTmpPathByContent($ssl_key_data);
         }
 
-        $options[RequestOptions::SSL_KEY] = $this->_sslCert;
+        $options[RequestOptions::SSL_KEY] = $this->_sslKey;
         $options[RequestOptions::CERT]    = $this->_sslCert;
 
         return $options;

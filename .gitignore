@@ -4,3 +4,4 @@ vendor/
 *.lock
 .DS_Store
 index.php
+response.html

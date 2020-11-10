@@ -2,6 +2,7 @@
 
 namespace paymentCenter\paymentService;
 
+use Exception;
 use paymentCenter\paymentClient\Application;
 
 /**
@@ -59,8 +60,17 @@ class WeChatPayGlobalService
     /**
      * 订单查询.
      */
-    public function orderQuery($data)
+    public function orderQuery($data, $signType = 'MD5')
     {
+        if (empty($data)) {
+            throw new Exception('参数缺失');
+    }
+
+        // if (empty($signType)) {
+        //     throw new Exception('签名类型缺失');
+        // }
+
+        return $this->_weChatPayGlobal->orderQuery($data, $signType = 'MD5');
     }
 
     /**
@@ -75,6 +85,24 @@ class WeChatPayGlobalService
         if (!isset($this->_weChatPayGlobalConfig['wx_apiclient_key']) || empty($this->_weChatPayGlobalConfig['wx_apiclient_key'])) {
             throw new Exception('微信交互证书apiclient_key.pem缺失');
         }
+
+        return $this->_weChatPayGlobal->orderRefund($data);
+    }
+
+    /**
+     * 订单退款.
+     */
+    public function orderRefundQuery($data)
+    {
+        if (!isset($this->_weChatPayGlobalConfig['wx_apiclient_cert']) || empty($this->_weChatPayGlobalConfig['wx_apiclient_cert'])) {
+            throw new Exception('微信交互证书apiclient_cert.pem缺失');
+        }
+
+        if (!isset($this->_weChatPayGlobalConfig['wx_apiclient_key']) || empty($this->_weChatPayGlobalConfig['wx_apiclient_key'])) {
+            throw new Exception('微信交互证书apiclient_key.pem缺失');
+        }
+
+        return $this->_weChatPayGlobal->orderRefundQuery($data);
     }
 
     /**
@@ -89,6 +117,8 @@ class WeChatPayGlobalService
         if (!isset($this->_weChatPayGlobalConfig['custom_no']) || empty($this->_weChatPayGlobalConfig['custom_no'])) {
             throw new Exception('微信支报关所对应海关编号缺失');
         }
+
+        return $this->_weChatPayGlobal->orderCustoms($data);
     }
 
     /**

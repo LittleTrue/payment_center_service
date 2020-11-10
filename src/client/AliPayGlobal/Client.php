@@ -71,7 +71,7 @@ class Client extends AliPayGlobalCredential
         //生成发送数据
         $param = [
             'service' => 'create_forex_trade',
-            'partner' => $this->app['config']['partner_id'],
+            'partner' => $this->_partnerId,
             '_input_charset' => 'UTF-8',
             'sign_type' => 'MD5',
             'subject' => $data['subject'],
@@ -85,6 +85,53 @@ class Client extends AliPayGlobalCredential
             'trade_information' => json_encode($data['trade_information'])
         ];
 
+        $param['sign'] = $this->MD5Sign($param);
+
+        //发送请求
+        return $this->requestPost($param);
+    }
+
+    /**
+     * 报关
+     */
+    public function orderCustoms($data)
+    {
+        $this->url = $this->request_url;
+
+        //验证参数
+        // $this->credentialValidate->setRule(
+        //     [
+        //         'out_request_no' => 'require|max:32',
+        //         'trade_no' => 'require|max:64',
+        //         'merchant_customs_code' => 'require|max:20',
+        //         'amount' => 'require',
+        //         'customs_place' => 'require|max:20',
+        //         'merchant_customs_name' => 'require|max:256',
+        //         'buyer_name' => 'max:10',
+        //         'buyer_id_no' => 'max:18',
+        //     ]
+        // );
+
+        // if (!$this->credentialValidate->check($data)) {
+        //     throw new ClientError('参数错误：'.$this->credentialValidate->getError());
+        // }
+
+        //生成发送数据
+        $param = [
+            'service' => 'alipay.acquire.customs',
+            'partner' => $this->_partnerId,
+            '_input_charset' => 'UTF-8',
+            'sign_type' => 'MD5',
+            'out_request_no' => $data['out_request_no'],
+            'trade_no' => $data['trade_no'],
+            'merchant_customs_code' => $data['merchant_customs_code'],
+            'amount' => $data['amount'],
+            'customs_place' => $data['customs_place'],
+            'merchant_customs_name' => $data['merchant_customs_name'],
+            'buyer_name' => isset($data['buyer_name']) ? $data['buyer_name'] : '',
+            'buyer_id_no' => isset($data['buyer_id_no']) ? $data['buyer_id_no'] : '',
+        ];
+        
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
