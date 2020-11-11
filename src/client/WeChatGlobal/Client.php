@@ -3,7 +3,6 @@
 namespace paymentCenter\paymentClient\WeChatGlobal;
 
 use paymentCenter\paymentClient\Application;
-use paymentCenter\paymentClient\Base\AesUtil;
 use paymentCenter\paymentClient\Base\Exceptions\ClientError;
 use paymentCenter\paymentClient\Base\WeChatPayGlobalCredential;
 
@@ -43,7 +42,7 @@ class Client extends WeChatPayGlobalCredential
     private $customs_order_url = 'https://api.mch.weixin.qq.com/global/v3/customs/orders';
 
     /**
-     * @var string 报关查询 
+     * @var string 报关查询
      */
     private $customs_query_url = 'https://apihk.mch.weixin.qq.com/global/v3/customs/orders';
 
@@ -56,7 +55,7 @@ class Client extends WeChatPayGlobalCredential
      * @var string 身份信息验证
      */
     private $verify_person_url = 'https://apihk.mch.weixin.qq.com/global/v3/customs/verify-certificate';
-   
+
     /**
      * @var string 获取最新证书
      */
@@ -78,31 +77,18 @@ class Client extends WeChatPayGlobalCredential
         $this->url = $this->unified_order_url;
 
         //验证参数
-        // $this->credentialValidate->setRule(
-        //     [
-        //         'MessageID'    => 'require|max:36',
-        //         'MessageType'  => 'require|max:36',
-        //         'Sender'       => 'require|max:36',
-        //         'Receiver'     => 'require|max:36',
-        //         'FunctionCode' => 'require|max:36',
-        //         'BusinessType' => 'require|max:10',
-        //         'IeFlag'       => 'require|max:1',
-        //         'OpType'       => 'require|max:1',
+        $this->credentialValidate->setRule(
+            [
+                'body'       => 'require|max:128',
+                'order_fee'  => 'require|max:10',
+                'notify_url' => 'require|max:256',
+                'attach'     => 'require|max:128',
+            ]
+        );
 
-        //         'DeclEntNo'   => 'require|max:50',
-        //         'DeclEntName' => 'require|max:100',
-        //         'EBEntNo'     => 'require|max:50',
-        //         'EBEntName'   => 'require|max:100',
-        //         'CustomsCode' => 'require|max:50',
-        //         'CIQOrgCode'  => 'require|max:50',
-        //         'EBPEntNo'    => 'require|max:50',
-        //         'EBPEntName'  => 'require|max:100',
-        //     ]
-        // );
-
-        // if (!$this->credentialValidate->check($data)) {
-        //     throw new ClientError('参数错误:' . $this->credentialValidate->getError());
-        // }
+        if (!$this->credentialValidate->check($data)) {
+            throw new ClientError('参数错误:' . $this->credentialValidate->getError());
+        }
 
         //生成商品备案包报文
         $payment_arr = [
@@ -115,6 +101,7 @@ class Client extends WeChatPayGlobalCredential
             'total_fee'        => $data['order_fee'],
             'spbill_create_ip' => empty($_SERVER['REMOTE_ADDR']) ? '0.0.0.0' : $_SERVER['REMOTE_ADDR'],
             'notify_url'       => $data['notify_url'],
+            'attach'           => $data['attach'],
             'trade_type'       => 'NATIVE',
         ];
 
@@ -135,16 +122,20 @@ class Client extends WeChatPayGlobalCredential
         $this->url = $this->order_query_url;
 
         //验证参数
-        // $this->credentialValidate->setRule(
-        //     [
-        //         'order_no' => 'requireIf,pay_no=|max:36',
-        //         'pay_no'   => 'requireIf,order_no=|max:36',
-        //     ]
-        // );
+        $this->credentialValidate->setRule(
+            [
+                'order_no' => 'require|max:32',
+                'pay_no'   => 'require|max:32',
+            ]
+        );
 
-        // if (!$this->credentialValidate->check($data)) {
-        //     throw new ClientError('参数错误:' . $this->credentialValidate->getError());
-        // }
+        if (!$this->credentialValidate->check($data)) {
+            throw new ClientError('参数错误:' . $this->credentialValidate->getError());
+        }
+
+        if (empty($data['order_no']) && empty($data['pay_no'])) {
+            throw new ClientError('参数错误: order_no , pay_no not be null');
+        }
 
         //生成商品备案包报文
         $payment_arr = [
@@ -171,21 +162,25 @@ class Client extends WeChatPayGlobalCredential
         $this->url = $this->refund_order_url;
 
         //验证参数
-        // $this->credentialValidate->setRule(
-        //     [
-        //         'order_no'        => 'requireIf,pay_no=|max:36',
-        //         'pay_no'          => 'requireIf,order_no=|max:36',
-        //         'refund_no'       => 'require|max:36',
-        //         'total_fee'       => 'require',
-        //         'refund_fee'      => 'require',
-        //         'refund_fee_type' => 'require|max:36',
-        //         'refund_desc'     => 'max:36',
-        //     ]
-        // );
+        $this->credentialValidate->setRule(
+            [
+                'order_no'        => 'requireIf,pay_no=|max:32',
+                'pay_no'          => 'requireIf,order_no=|max:32',
+                'refund_no'       => 'require|max:32',
+                'total_fee'       => 'require',
+                'refund_fee'      => 'require',
+                'refund_fee_type' => 'max:8',
+                'refund_desc'     => 'max:80',
+            ]
+        );
 
-        // if (!$this->credentialValidate->check($data)) {
-        //     throw new ClientError('参数错误:' . $this->credentialValidate->getError());
-        // }
+        if (!$this->credentialValidate->check($data)) {
+            throw new ClientError('参数错误:' . $this->credentialValidate->getError());
+        }
+
+        if (empty($data['order_no']) && empty($data['pay_no'])) {
+            throw new ClientError('参数错误: order_no, pay_no not be null');
+        }
 
         //退款报文组装
         $payment_arr = [
@@ -193,7 +188,7 @@ class Client extends WeChatPayGlobalCredential
             'mch_id'          => $this->mchId,
             'nonce_str'       => $this->getNonceStr(),
             'transaction_id'  => isset($data['pay_no']) ? $data['pay_no'] : '',
-            'out_trade_no'    => isset($data['order_no']) ? $data['order_no'] : '',
+            'out_trade_no'    => isset($data['EntOrder']) ? $data['order_no'] : '',
             'out_refund_no'   => $data['refund_no'],
             'total_fee'       => $data['total_fee'],
             'refund_fee'      => $data['refund_fee'],
@@ -216,18 +211,22 @@ class Client extends WeChatPayGlobalCredential
         //设置方法接口路由
         $this->url = $this->refund_query_url;
         //验证参数
-        // $this->credentialValidate->setRule(
-        //     [
-        //         'transaction_id' => 'require|max:36',
-        //         'out_trade_no'   => 'require|max:36',
-        //         'out_refund_no'  => 'require|max:36',
-        //         'refund_id'      => 'require|max:36',
-        //     ]
-        // );
+        $this->credentialValidate->setRule(
+            [
+                'pay_no'    => 'max:32',
+                'order_no'  => 'max:32',
+                'refund_no' => 'max:32',
+                'refund_id' => 'max:32',
+            ]
+        );
 
-        // if (!$this->credentialValidate->check($data)) {
-        //     throw new ClientError('参数错误:' . $this->credentialValidate->getError());
-        // }
+        if (!$this->credentialValidate->check($data)) {
+            throw new ClientError('参数错误:' . $this->credentialValidate->getError());
+        }
+
+        if (empty($data['pay_no']) && empty($data['order_no']) && empty($data['refund_no']) && empty($data['refund_id'])) {
+            throw new ClientError('参数错误: pay_no,order_no,refund_no,refund_id not be null');
+        }
 
         //退款查询报文组装
         $payment_arr = [
@@ -256,11 +255,22 @@ class Client extends WeChatPayGlobalCredential
         //设置方法接口路由
         $this->url = $this->customs_order_url;
 
+        $this->credentialValidate->setRule(
+            [
+                'order_no' => 'require|max:32',
+                'pay_no'   => 'require|max:32',
+            ]
+        );
+
+        if (!$this->credentialValidate->check($data)) {
+            throw new ClientError('参数错误:' . $this->credentialValidate->getError());
+        }
+
         $param_arr = [
             'appid'               => $this->appId,
             'mchid'               => $this->mchId,
-            'out_trade_no'        => $data['EntOrderNo'],
-            'transaction_id'      => $data['EntPayNo'],
+            'out_trade_no'        => $data['order_no'],
+            'transaction_id'      => $data['pay_no'],
             'customs'             => $this->custom,
             'merchant_customs_no' => $this->customNo,
             'fee_type'            => 'CNY',
@@ -284,6 +294,17 @@ class Client extends WeChatPayGlobalCredential
     {
         //设置方法接口路由
         $this->url = $this->customs_query_url;
+
+        $this->credentialValidate->setRule(
+            [
+                'order_type' => 'require|in:IDCARD',
+                'order_no'   => 'require|max:32',
+            ]
+        );
+
+        if (!$this->credentialValidate->check($data)) {
+            throw new ClientError('参数错误:' . $this->credentialValidate->getError());
+        }
 
         $param_arr = [
             'appid'      => $this->appId,
@@ -318,6 +339,34 @@ class Client extends WeChatPayGlobalCredential
     {
         //设置方法接口路由
         $this->url = $this->customs_redeclare_url;
+
+        $this->credentialValidate->setRule(
+            [
+                'out_trade_no'   => 'require|max:32',
+                'transaction_id' => 'require|max:32',
+            ]
+        );
+
+        if (!$this->credentialValidate->check($data)) {
+            throw new ClientError('参数错误:' . $this->credentialValidate->getError());
+        }
+
+        $param_arr = [
+            'appid'               => $this->appId,
+            'mchid'               => $this->mchId,
+            'out_trade_no'        => $data['order_no'],
+            'transaction_id'      => $data['pay_no'],
+            'customs'             => $this->custom,
+            'merchant_customs_no' => $this->customNo,
+        ];
+
+        $auth = $this->sign($param_arr, 'POST');
+
+        $this->setJsonParams($param_arr);
+
+        $this->setHeaders(['Authorization' => $auth]);
+
+        return $this->httpPostJson();
     }
 
     /**
@@ -333,8 +382,8 @@ class Client extends WeChatPayGlobalCredential
         $param_arr = [
             'appid'               => $this->appId,
             'mchid'               => $this->mchId,
-            'out_trade_no'        => $data['EntOrderNo'],
-            'transaction_id'      => $data['EntPayNo'],
+            'out_trade_no'        => $data['order_no'],
+            'transaction_id'      => $data['pay_no'],
             'sub_order_no'        => '',
             'customs'             => $this->custom,
             'merchant_customs_no' => $this->customNo,

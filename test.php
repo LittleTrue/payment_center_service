@@ -27,6 +27,7 @@ $wechatService = new WeChatPayGlobalService($ioc_con_app);
 //业务参数
 // $info = [
 //     'body' => 'test',
+//     'attach' => '1',
 //     'order_no' => '10000001',
 //     'order_fee' => '1',
 //     'notify_url' => 'https://www.thinbug.com/q/34726530',
@@ -69,8 +70,10 @@ $wechatService = new WeChatPayGlobalService($ioc_con_app);
 
 //退款查询
 // $info = [
-//     'order_no'          => '10000001',
-//     'refund_no'         => 'R10000001',
+//     'order_no'        => '10000001',
+//     'refund_no'         => '',
+//     'pay_no'          => '4200000738202011092400680961',
+//     'refund_id'          => '',
 //     'total_fee'         => '1',
 //     'refund_fee'        => '1',
 //     'refund_fee_type'   => '',
@@ -87,8 +90,8 @@ $wechatService = new WeChatPayGlobalService($ioc_con_app);
 
 //支付单报关
 // $info = [
-//     'EntOrderNo'   => '10000001',
-//     'EntPayNo' => '4200000738202011092400680961',
+//     'order_no'   => '10000001',
+//     'pay_no' => '4200000738202011092400680961',
 // ];
 
 // try {
@@ -115,8 +118,8 @@ $wechatService = new WeChatPayGlobalService($ioc_con_app);
 
 //身份验证
 // $info = [
-//     'EntOrderNo'     => '10000001',
-//     'EntPayNo'       => '4200000738202011092400680961',
+//     'order_no'     => '10000001',
+//     'pay_no'       => '4200000738202011092400680961',
 //     'sub_order_no'   => '',
 //     'order_doc_id'  => '440583199705234511',
 //     'order_doc_name' => '陈子安',
@@ -133,11 +136,26 @@ $wechatService = new WeChatPayGlobalService($ioc_con_app);
 // die();
 
 //获取证书信息
-try {
-    $tmp = $wechatService->getCert();
-} catch (Exception $e) {
-    var_dump($e->getMessage());
-    die();
-}
-var_dump($tmp); die();
-die();
+// try {
+//     $tmp = $wechatService->getCert();
+// } catch (Exception $e) {
+//     var_dump($e->getMessage());
+//     die();
+// }
+// var_dump($tmp); die();
+// die();
+
+//重推海关
+// $info = [
+//     'order_no'     => '10000001',
+//     'pay_no'       => '4200000738202011092400680961',
+// ];
+
+// try {
+//     $tmp = $wechatService->orderCustomsRedeclare($info);
+// } catch (Exception $e) {
+//     var_dump($e->getMessage());
+//     die();
+// }
+// var_dump($tmp); die();
+// die();

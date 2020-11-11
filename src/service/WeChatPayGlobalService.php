@@ -150,7 +150,23 @@ class WeChatPayGlobalService
     }
 
     /**
-     * 身份校验.
+     * 支付单重推.
+     */
+    public function orderCustomsRedeclare($data)
+    {
+        if (!isset($this->_weChatPayGlobalConfig['custom']) || empty($this->_weChatPayGlobalConfig['custom'])) {
+            throw new Exception('微信报关所选海关缺失');
+        }
+
+        if (!isset($this->_weChatPayGlobalConfig['custom_no']) || empty($this->_weChatPayGlobalConfig['custom_no'])) {
+            throw new Exception('微信支报关所对应海关编号缺失');
+        }
+
+        return $this->_weChatPayGlobal->orderCustomsRedeclare($data);
+    }
+
+    /**
+     * 获取最新证书.
      */
     public function getCert()
     {
