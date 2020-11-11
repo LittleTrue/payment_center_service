@@ -28,27 +28,27 @@ class Client extends WeChatPayGlobalCredential
     private $order_query_url = 'https://api.mch.weixin.qq.com/pay/orderquery';
 
     /**
-     * @var string 申请退款
+     * @var string 申请退款 -- 需要API证书
      */
     private $refund_order_url = 'https://api.mch.weixin.qq.com/secapi/pay/refund';
 
     /**
-     * @var string 退款查询
+     * @var string 退款查询 -- 需要API证书
      */
     private $refund_query_url = 'https://api.mch.weixin.qq.com/pay/refundquery';
 
     /**
-     * @var string 订单报关
+     * @var string 报关申报 -- 需要报关备案信息
      */
     private $customs_order_url = 'https://api.mch.weixin.qq.com/global/v3/customs/orders';
 
     /**
-     * @var string 订单报关查询
+     * @var string 报关查询 
      */
     private $customs_query_url = 'https://apihk.mch.weixin.qq.com/global/v3/customs/orders';
 
     /**
-     * @var string 订单报关重推
+     * @var string 报关重推
      */
     private $customs_redeclare_url = 'https://apihk.mch.weixin.qq.com/global/v3/customs/redeclare';
 

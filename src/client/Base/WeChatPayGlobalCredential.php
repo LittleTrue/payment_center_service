@@ -147,7 +147,7 @@ class WeChatPayGlobalCredential extends BaseClient
         $options[RequestOptions::TIMEOUT] = 30.0;
         $options[RequestOptions::BODY]    = $xml;
 
-        return $this->FromXml($this->request('POST', $this->url, $options));
+        return $this->parsingResponse($this->request('POST', $this->url, $options));
     }
 
     /**
@@ -156,6 +156,7 @@ class WeChatPayGlobalCredential extends BaseClient
      */
     public function parsingResponse($response)
     {
+        $response = $this->FromXml($response);
         //第一层 -- 请求及通讯层状态 -- 扔出错误, 该种类型的错误, 不需要业务参与, 属于调试阶段的对接问题
         if ('SUCCESS' != $response['return_code']) {
             foreach ($response as $key => $value) {

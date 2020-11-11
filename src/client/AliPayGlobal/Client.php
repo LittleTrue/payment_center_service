@@ -40,8 +40,8 @@ class Client extends AliPayGlobalCredential
                 'body' => 'max:400',
                 'out_trade_no' => 'require|max:64',
                 'currency' => 'require|max:10',
-                'total_fee' => 'require|number',
-                'rmb_fee' => 'require|number',
+                // 'total_fee' => 'number',
+                // 'rmb_fee' => 'number',
                 'refer_url' => 'require',
                 'product_code' => 'require|max:32',
                 'notify_url' => 'require|max:200'
@@ -79,8 +79,8 @@ class Client extends AliPayGlobalCredential
             'body' => isset($data['body']) ? $data['body'] : '',
             'out_trade_no' => $data['out_trade_no'],
             'currency' => $data['currency'],
-            'total_fee' => $data['total_fee'],
-            'rmb_fee' => $data['rmb_fee'],
+            'total_fee' => isset($data['total_fee']) ? $data['total_fee'] : '',
+            'rmb_fee' => isset($data['rmb_fee']) ? $data['rmb_fee'] : '',
             'refer_url' =>  $data['refer_url'],
             'product_code' => $data['product_code'],
             'trade_information' => json_encode($data['trade_information']),
@@ -90,9 +90,9 @@ class Client extends AliPayGlobalCredential
 
         $param['sign'] = $this->MD5Sign($param);
 
-        file_put_contents('./response.html',$this->requestPost($param));
-        //发送请求
-        return 'ok';
+        // file_put_contents('./response.html',$this->requestPost($param));
+        
+        return $this->requestPost($param);
     }
 
     /**
