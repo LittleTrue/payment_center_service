@@ -5,7 +5,7 @@
  * @Author: Yan
  * @Date: 2020-11-09 10:37:39
  * @LastEditors: Yan
- * @LastEditTime: 2020-11-11 10:04:54
+ * @LastEditTime: 2020-11-11 16:39:06
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -16,7 +16,9 @@ use paymentCenter\paymentService\AliPayGlobalService;
 //主体参数
 $config = [
     'partner_id' => '2088621891278220',
+    // 'partner_id' => '2088931955294438',
     'key'   => 'x017pu0k7eunv1azw69w5tyoafr36w46',
+    // 'key'   => '1gq2qomq76qk5su0rkhuvc4508apbp8o',
 ];
 
 
@@ -24,28 +26,28 @@ $ioc_con_app = new Application($config);
 
 $aliPayService   = new AliPayGlobalService($ioc_con_app);
 
-// //扫码支付测试
-// $info = [
-//     'subject' => 'kids clothing',
-//     'body' => 'goods',
-//     'out_trade_no' => '202011098899155',
-//     'currency' => 'USD',
-//     'total_fee' => '',
-//     'rmb_fee' => 0.08,
-//     'refer_url' =>  'http://baidu.com',
-//     'product_code' => 'NEW_OVERSEAS_SELLER',
-//     'notify_url' => 'http://baidu.com',
-//     'return_url' => '',
-//     'trade_information' => [
-//         'business_type' => '4',
-//         'goods_info' => 'pencil^1',
-//         'total_quantity' => 1
-//     ]
-// ];
+//扫码支付测试
+$info = [
+    'subject' => 'kids clothing',
+    'body' => 'goods',
+    'out_trade_no' => '202011098899156',
+    'currency' => 'USD',
+    'total_fee' => '',
+    'rmb_fee' => 0.08,
+    'refer_url' =>  'http://baidu.com',
+    'product_code' => 'NEW_WAP_OVERSEAS_SELLER',
+    'notify_url' => 'http://baidu.com',
+    'return_url' => '',
+    'trade_information' => [
+        'business_type' => '4',
+        'goods_info' => 'pencil^1',
+        'total_quantity' => 1
+    ]
+];
 
-// $tmp = $aliPayService->qrCodePay($info);
-// var_dump($tmp);
-// die();
+$tmp = $aliPayService->qrCodePay($info);
+var_dump($tmp);
+die();
 
 
 

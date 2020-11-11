@@ -31,7 +31,6 @@ trait MakesHttpRequests
                 $response->getStatusCode()
             );
         }
-
         return $response->getBody()->getContents();
     }
 }
