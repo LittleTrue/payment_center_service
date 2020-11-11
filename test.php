@@ -16,6 +16,8 @@ $config = [
 
     'wx_apiclient_key'  => 'G:/wamp64/www/apiclient_key.pem',
     'wx_apiclient_cert' => 'G:/wamp64/www/apiclient_cert.pem',
+
+    'cert'  => 'G:/wamp64/www/WeChatCert.pem'
 ];
 
 $ioc_con_app = new Application($config);
@@ -112,17 +114,27 @@ $wechatService = new WeChatPayGlobalService($ioc_con_app);
 // die();
 
 //身份验证
-$info = [
-    'EntOrderNo'     => '10000001',
-    'EntPayNo'       => '4200000738202011092400680961',
-    'sub_order_no'   => '',
-    'order_doc_id'  => '440583199705234511',
-    'order_doc_name' => '陈子安',
-    'cert_type'      => 'IDCARD', //out_trade_no-商家订单号 transaction_id-微信支付订单号 sub_order_no-商家子订单号 sub_order_id-微信子订单号
-];
+// $info = [
+//     'EntOrderNo'     => '10000001',
+//     'EntPayNo'       => '4200000738202011092400680961',
+//     'sub_order_no'   => '',
+//     'order_doc_id'  => '440583199705234511',
+//     'order_doc_name' => '陈子安',
+//     'cert_type'      => 'IDCARD', //out_trade_no-商家订单号 transaction_id-微信支付订单号 sub_order_no-商家子订单号 sub_order_id-微信子订单号
+// ];
 
+// try {
+//     $tmp = $wechatService->orderPersonVerify($info);
+// } catch (Exception $e) {
+//     var_dump($e->getMessage());
+//     die();
+// }
+// var_dump($tmp); die();
+// die();
+
+//获取证书信息
 try {
-    $tmp = $wechatService->orderPersonVerify($info);
+    $tmp = $wechatService->getCert();
 } catch (Exception $e) {
     var_dump($e->getMessage());
     die();

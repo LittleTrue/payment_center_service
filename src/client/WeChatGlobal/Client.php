@@ -3,6 +3,7 @@
 namespace paymentCenter\paymentClient\WeChatGlobal;
 
 use paymentCenter\paymentClient\Application;
+use paymentCenter\paymentClient\Base\AesUtil;
 use paymentCenter\paymentClient\Base\Exceptions\ClientError;
 use paymentCenter\paymentClient\Base\WeChatPayGlobalCredential;
 
@@ -55,6 +56,11 @@ class Client extends WeChatPayGlobalCredential
      * @var string 身份信息验证
      */
     private $verify_person_url = 'https://apihk.mch.weixin.qq.com/global/v3/customs/verify-certificate';
+   
+    /**
+     * @var string 获取最新证书
+     */
+    private $get_cert_url = 'https://api.mch.weixin.qq.com/v3/certificates';
 
     public function __construct(Application $app)
     {
@@ -322,6 +328,8 @@ class Client extends WeChatPayGlobalCredential
         //设置方法接口路由
         $this->url = $this->verify_person_url;
 
+        $serial_no = openssl_x509_parse(file_get_contents($this->cert));
+
         $param_arr = [
             'appid'               => $this->appId,
             'mchid'               => $this->mchId,
@@ -331,18 +339,16 @@ class Client extends WeChatPayGlobalCredential
             'customs'             => $this->custom,
             'merchant_customs_no' => $this->customNo,
             'certificate_type'    => $data['cert_type'],
-            'certificate_id'      => $data['order_doc_id'],
-            'certificate_name'    => $data['order_doc_name'],
+            'certificate_id'      => $this->rsa($data['order_doc_id']),
+            'certificate_name'    => $this->rsa($data['order_doc_name']),
         ];
 
         $auth = $this->sign($param_arr, 'POST');
 
         $this->setHeaders(['Authorization' => $auth]);
-        // $this->setHeaders(['User-Agent' => $this->mchId]);
-        $this->setHeaders(['Wechatpay-Serial' => openssl_x509_parse(file_get_contents($this->apiClientCert))['serialNumberHex']]);
-        
-        $this->setJsonParams($param_arr);
+        $this->setHeaders(['Wechatpay-Serial' => $serial_no]);
 
+        $this->setJsonParams($param_arr);
 
         return $this->httpPostJson();
     }

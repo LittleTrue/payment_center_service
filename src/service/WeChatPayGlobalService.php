@@ -148,4 +148,12 @@ class WeChatPayGlobalService
 
         return $this->_weChatPayGlobal->orderPersonVerify($data);
     }
+
+    /**
+     * 身份校验.
+     */
+    public function getCert()
+    {
+        return $this->_weChatPayGlobal->getCert();
+    }
 }

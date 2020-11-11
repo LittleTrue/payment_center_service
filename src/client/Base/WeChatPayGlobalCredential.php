@@ -28,6 +28,8 @@ class WeChatPayGlobalCredential extends BaseClient
 
     protected $customNo;
 
+    protected $cert;
+
     public function __construct(Application $app)
     {
         parent::__construct($app);
@@ -46,6 +48,8 @@ class WeChatPayGlobalCredential extends BaseClient
         //报关参数
         $this->custom   = $this->app['config']->get('custom');
         $this->customNo = $this->app['config']->get('custom_no');
+
+        $this->cert = $this->app['config']->get('cert');
     }
 
     /**
@@ -226,5 +230,12 @@ class WeChatPayGlobalCredential extends BaseClient
         $token = sprintf('mchid="%s",nonce_str="%s",timestamp="%d",serial_no="%s",signature="%s"',$this->mchId, $nonce, $timestamp, $serial_no['serialNumberHex'], $sign);
 
         return 'WECHATPAY2-SHA256-RSA2048 ' . $token;
+    }
+
+    public function rsa($content)
+    {
+        openssl_public_encrypt($content, $encrypted, file_get_contents($this->cert));
+        $encrypted = base64_encode($encrypted);  
+        return $encrypted;
     }
 }
