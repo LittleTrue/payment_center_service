@@ -90,9 +90,9 @@ class Client extends AliPayGlobalCredential
 
         $param['sign'] = $this->MD5Sign($param);
 
-        file_put_contents('./response.html',$this->requestPost($param));
-        //发送请求
-        return 'ok';
+        // file_put_contents('./response.html',$this->requestPost($param));
+        
+        return $this->requestPost($param);
     }
 
     /**
