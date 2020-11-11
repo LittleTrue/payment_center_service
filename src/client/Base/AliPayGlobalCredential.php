@@ -87,7 +87,22 @@ class AliPayGlobalCredential extends BaseClient
 
         $options[RequestOptions::TIMEOUT] = 30.0;
 
-        return $this->request('GET', $this->url . '?' . $string);
+        $response = $this->request('GET', $this->url . '?' . $string);
+
+        $xml_parser = xml_parser_create();
+        if (!xml_parse($xml_parser, $response, true)) {
+            xml_parser_free($xml_parser);
+            
+            return $response;
+        } else {
+            $response = $this->FromXml($response);
+
+            if ('T' == $response['is_success']) {
+                return $response;
+            } else {
+                throw new ClientError('支付宝错误提示：' . $response['error']);
+            }
+        }
     }
 
     /**

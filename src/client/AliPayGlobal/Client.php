@@ -20,8 +20,6 @@ class Client extends AliPayGlobalCredential
 
     private $request_url = 'https://mapi.alipaydev.com/gateway.do';
 
-    // private $qrcode_request_url = 'https://intlmapi.alipay.com/gateway.do';
-
     public function __construct(Application $app)
     {
         parent::__construct($app);
@@ -144,7 +142,8 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->FromXml($this->requestPost($param));
+        $response = $this->requestPost($param);
+
         return $response;
     }
     
@@ -193,7 +192,8 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->FromXml($this->requestPost($param));
+        $response = $this->requestPost($param);
+
         return $response;
     }
 
@@ -229,7 +229,8 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->FromXml($this->requestPost($param));
+        $response = $this->requestPost($param);
+
         return $response;
     }
 
@@ -263,7 +264,8 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->FromXml($this->requestPost($param));
+        $response = $this->requestPost($param);
+
         return $response;
     }
 
@@ -299,7 +301,8 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->FromXml($this->requestPost($param));
+        $response = $this->requestPost($param);
+
         return $response;
     }
 
