@@ -20,6 +20,8 @@ class Client extends AliPayGlobalCredential
 
     private $request_url = 'https://mapi.alipaydev.com/gateway.do';
 
+    // private $qrcode_request_url = 'https://intlmapi.alipay.com/gateway.do';
+
     public function __construct(Application $app)
     {
         parent::__construct($app);
@@ -71,28 +73,31 @@ class Client extends AliPayGlobalCredential
 
         //生成发送数据
         $param = [
-            'service' => 'create_forex_trade',
-            'partner' => $this->_partnerId,
             '_input_charset' => 'UTF-8',
+            'currency' => $data['currency'],
+            'out_trade_no' => $data['out_trade_no'],
+            'partner' => $this->_partnerId,
+            'product_code' => $data['product_code'],
+            'qr_pay_mode' => 4,
+            'qrcode_width' => 200,//最好由客户指定吧
+            'service' => 'create_forex_trade', 
             'sign_type' => 'MD5',
             'subject' => $data['subject'],
             'body' => isset($data['body']) ? $data['body'] : '',
-            'out_trade_no' => $data['out_trade_no'],
-            'currency' => $data['currency'],
             'total_fee' => isset($data['total_fee']) ? $data['total_fee'] : '',
             'rmb_fee' => isset($data['rmb_fee']) ? $data['rmb_fee'] : '',
             'refer_url' =>  $data['refer_url'],
-            'product_code' => $data['product_code'],
             'trade_information' => json_encode($data['trade_information']),
             'return_url' => isset($data['return_url']) ? $data['return_url'] : '',
             'notify_url' => isset($data['notify_url']) ? $data['notify_url'] : ''
         ];
 
         $param['sign'] = $this->MD5Sign($param);
+        $response = $this->requestPost($param);
 
-        // file_put_contents('./response.html',$this->requestPost($param));
+        // return $response;
+        file_put_contents('./response.html',$response);
         
-        return $this->requestPost($param);
     }
 
     /**
