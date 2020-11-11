@@ -60,8 +60,7 @@ class BaseClient
         $this->headers = [
             'Content-Type'  => 'application/json',
             'timestamp'     => time(),
-            'User-Agent'    => '',
-            'Accept'        => '*/*'
+            'Accept'        => 'application/json'
         ];
     }
 

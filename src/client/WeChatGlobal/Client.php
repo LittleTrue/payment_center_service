@@ -251,20 +251,22 @@ class Client extends WeChatPayGlobalCredential
         $this->url = $this->customs_order_url;
 
         $param_arr = [
-            'appid'                 => $this->appId,
-            'mchid'                 => $this->mchId,
-            'out_trade_no'          => $data['EntOrderNo'],
-            'transaction_id'        => $data['EntPayNo'],
-            'customs'               => $this->custom,
-            'merchant_customs_no'   => $this->customNo,
-            'fee_type'              => 'CNY',
+            'appid'               => $this->appId,
+            'mchid'               => $this->mchId,
+            'out_trade_no'        => $data['EntOrderNo'],
+            'transaction_id'      => $data['EntPayNo'],
+            'customs'             => $this->custom,
+            'merchant_customs_no' => $this->customNo,
+            'fee_type'            => 'CNY',
         ];
 
-        $auth = $this->sign(json_encode($param_arr, JSON_UNESCAPED_UNICODE));
+        $auth = $this->sign($param_arr, 'POST');
 
         $this->setJsonParams($param_arr);
 
         $this->setHeaders(['Authorization' => $auth]);
+
+        $this->setHeaders(['User-Agent' => $this->mchId]);
 
         return $this->httpPostJson();
     }
@@ -276,6 +278,31 @@ class Client extends WeChatPayGlobalCredential
     {
         //设置方法接口路由
         $this->url = $this->customs_query_url;
+
+        $param_arr = [
+            'appid'      => $this->appId,
+            'mchid'      => $this->mchId,
+            'order_type' => $data['order_type'],
+            'order_no'   => $data['order_no'],
+            'customs'    => $this->custom,
+        ];
+
+        $this->url .= '?';
+
+        //组装url
+        foreach ($param_arr as $key => $value) {
+            $this->url .= $key . '=' . $value . '&';
+        }
+
+        $this->url = substr($this->url, 0, strlen($this->url) - 1);
+
+        $auth = $this->sign($param_arr, 'GET');
+
+        $this->setHeaders(['Authorization' => $auth]);
+
+        $this->setHeaders(['User-Agent' => $this->mchId]);
+
+        return $this->httpGet($this->url, $param_arr);
     }
 
     /**
@@ -294,5 +321,29 @@ class Client extends WeChatPayGlobalCredential
     {
         //设置方法接口路由
         $this->url = $this->verify_person_url;
+
+        $param_arr = [
+            'appid'               => $this->appId,
+            'mchid'               => $this->mchId,
+            'out_trade_no'        => $data['EntOrderNo'],
+            'transaction_id'      => $data['EntPayNo'],
+            'sub_order_no'        => '',
+            'customs'             => $this->custom,
+            'merchant_customs_no' => $this->customNo,
+            'certificate_type'    => $data['cert_type'],
+            'certificate_id'      => $data['order_doc_id'],
+            'certificate_name'    => $data['order_doc_name'],
+        ];
+
+        $auth = $this->sign($param_arr, 'POST');
+
+        $this->setHeaders(['Authorization' => $auth]);
+        // $this->setHeaders(['User-Agent' => $this->mchId]);
+        $this->setHeaders(['Wechatpay-Serial' => openssl_x509_parse(file_get_contents($this->apiClientCert))['serialNumberHex']]);
+        
+        $this->setJsonParams($param_arr);
+
+
+        return $this->httpPostJson();
     }
 }

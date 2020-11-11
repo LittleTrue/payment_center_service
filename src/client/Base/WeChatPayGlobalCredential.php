@@ -186,8 +186,10 @@ class WeChatPayGlobalCredential extends BaseClient
 
     /**
      * 签名
+     * 方法为 GET 时， body传空/其他方法传json格式字符串
+     * method GET POST PUT
      */
-    public function sign($body)
+    public function sign($body, $method)
     {
         $mch_private_key = file_get_contents($this->apiClientKey);
         $url_parts = parse_url($this->url);
@@ -196,7 +198,20 @@ class WeChatPayGlobalCredential extends BaseClient
 
         $canonical_url = ($url_parts['path'] . (!empty($url_parts['query']) ? "?${url_parts['query']}" : ""));
 
-        $message = 'POST'."\n".
+        switch ($method) {
+            case 'GET':
+                $body = '';
+                break;
+            case 'PUT':
+            case 'POST':
+                $body = json_encode($body);
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        $message = $method ."\n".
             $canonical_url."\n".
             $timestamp ."\n".
             $nonce ."\n".
