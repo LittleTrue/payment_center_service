@@ -76,8 +76,8 @@ class Client extends AliPayGlobalCredential
             'out_trade_no' => $data['out_trade_no'],
             'partner' => $this->_partnerId,
             'product_code' => $data['product_code'],
-            'qr_pay_mode' => 4,
-            'qrcode_width' => 200,//最好由客户指定吧
+            // 'qr_pay_mode' => 4,
+            // 'qrcode_width' => 200,//最好由客户指定吧
             'service' => 'create_forex_trade', 
             'sign_type' => 'MD5',
             'subject' => $data['subject'],
@@ -91,10 +91,9 @@ class Client extends AliPayGlobalCredential
         ];
 
         $param['sign'] = $this->MD5Sign($param);
-        $response = $this->requestPost($param);
+        $response = $this->buildRequestUrl($param);
 
-        // return $response;
-        file_put_contents('./response.html',$response);
+        return $response;
         
     }
 
@@ -142,7 +141,7 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->requestPost($param);
+        $response = $this->requestPost($this->buildRequestUrl($param));
 
         return $response;
     }
@@ -192,7 +191,7 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->requestPost($param);
+        $response = $this->requestPost($this->buildRequestUrl($param));
 
         return $response;
     }
@@ -229,7 +228,7 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->requestPost($param);
+        $response = $this->requestPost($this->buildRequestUrl($param));
 
         return $response;
     }
@@ -264,7 +263,7 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->requestPost($param);
+        $response = $this->requestPost($this->buildRequestUrl($param));
 
         return $response;
     }
@@ -301,7 +300,7 @@ class Client extends AliPayGlobalCredential
         $param['sign'] = $this->MD5Sign($param);
 
         //发送请求
-        $response = $this->requestPost($param);
+        $response = $this->requestPost($this->buildRequestUrl($param));
 
         return $response;
     }

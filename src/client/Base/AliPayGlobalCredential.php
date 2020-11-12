@@ -71,7 +71,10 @@ class AliPayGlobalCredential extends BaseClient
         return strtolower(md5($string . $this->_secretKey));
     }
 
-    public function requestPost($param)
+    /**
+     * 组建访问URL
+     */
+    public function buildRequestUrl($param)
     {
         ksort($param);
 
@@ -85,9 +88,18 @@ class AliPayGlobalCredential extends BaseClient
 
         $string = trim($string, '&');
 
-        $options[RequestOptions::TIMEOUT] = 30.0;
+        return $this->url . '?' . $string;
+    }
 
-        $response = $this->request('GET', $this->url . '?' . $string);
+    public function requestPost($url = '')
+    {
+        if ('' == $url) {
+            throw new ClientError('支付宝错误提示：请求url为空');
+        }
+        
+        $options[RequestOptions::TIMEOUT] = 30.0;
+        
+        $response = $this->request('GET', $url);
 
         $xml_parser = xml_parser_create();
         if (!xml_parse($xml_parser, $response, true)) {
