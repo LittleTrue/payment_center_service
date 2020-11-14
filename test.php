@@ -17,7 +17,9 @@ $config = [
     'wx_apiclient_key'  => 'G:/wamp64/www/apiclient_key.pem',
     'wx_apiclient_cert' => 'G:/wamp64/www/apiclient_cert.pem',
 
-    'cert'  => 'G:/wamp64/www/WeChatCert.pem'
+    'cert'  => 'G:/wamp64/www/WeChatCert.pem',
+    
+    'APIv3_key' => 'HHainanxinyiguojikuajing20180814',
 ];
 
 $ioc_con_app = new Application($config);

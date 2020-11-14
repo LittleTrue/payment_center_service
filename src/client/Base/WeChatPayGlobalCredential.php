@@ -30,6 +30,8 @@ class WeChatPayGlobalCredential extends BaseClient
 
     protected $cert;
 
+    protected $aesKey;
+
     public function __construct(Application $app)
     {
         parent::__construct($app);
@@ -50,6 +52,8 @@ class WeChatPayGlobalCredential extends BaseClient
         $this->customNo = $this->app['config']->get('custom_no');
 
         $this->cert = $this->app['config']->get('cert');
+
+        $this->aesKey = $this->app['config']->get('APIv3_key');
     }
 
     /**

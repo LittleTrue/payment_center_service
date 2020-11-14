@@ -3,6 +3,7 @@
 namespace paymentCenter\paymentClient\WeChatGlobal;
 
 use paymentCenter\paymentClient\Application;
+use paymentCenter\paymentClient\Base\AesUtil;
 use paymentCenter\paymentClient\Base\Exceptions\ClientError;
 use paymentCenter\paymentClient\Base\WeChatPayGlobalCredential;
 
@@ -395,10 +396,31 @@ class Client extends WeChatPayGlobalCredential
         $auth = $this->sign($param_arr, 'POST');
 
         $this->setHeaders(['Authorization' => $auth]);
-        $this->setHeaders(['Wechatpay-Serial' => $serial_no]);
+        $this->setHeaders(['Wechatpay-Serial' => $serial_no['serialNumberHex']]);
 
         $this->setJsonParams($param_arr);
 
         return $this->httpPostJson();
+    }
+
+    /**
+     * 获取最新证书，需手动复制进pem文件.
+     */
+    public function getCert()
+    {
+        //设置方法接口路由
+        $this->url = $this->get_cert_url;
+
+        $auth = $this->sign([], 'GET');
+
+        $this->setHeaders(['Authorization' => $auth]);
+
+        $result = $this->httpGet($this->url);
+
+        $res = json_decode($result, true)['data'][0]['encrypt_certificate'];
+
+        $key = (new AesUtil($this->aesKey))->decryptToString($res['associated_data'], $res['nonce'], $res['ciphertext']);
+
+        var_dump($key);die();
     }
 }
