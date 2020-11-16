@@ -1,11 +1,11 @@
 <?php
 /*
- * @Description: 
- * @Version: 
+ * @Description:
+ * @Version:
  * @Author: Yan
  * @Date: 2020-11-09 10:37:39
  * @LastEditors: Yan
- * @LastEditTime: 2020-11-12 10:09:06
+ * @LastEditTime: 2020-11-16 14:23:10
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -17,40 +17,37 @@ use paymentCenter\paymentService\AliPayGlobalService;
 $config = [
     'partner_id' => '2088621891278220',
     // 'partner_id' => '2088931955294438',
-    'key'   => 'x017pu0k7eunv1azw69w5tyoafr36w46',
+    'key' => 'x017pu0k7eunv1azw69w5tyoafr36w46',
     // 'key'   => '1gq2qomq76qk5su0rkhuvc4508apbp8o',
 ];
 
-
 $ioc_con_app = new Application($config);
 
-$aliPayService   = new AliPayGlobalService($ioc_con_app);
+$aliPayService = new AliPayGlobalService($ioc_con_app);
 
 //扫码支付测试
-$info = [
-    'subject' => 'kids clothing',
-    'body' => 'goods',
-    'out_trade_no' => '202011098899156',
-    'currency' => 'USD',
-    'total_fee' => '',
-    'rmb_fee' => 0.08,
-    'refer_url' =>  'http://baidu.com',
-    // 'product_code' => 'NEW_WAP_OVERSEAS_SELLER',
-    'product_code' => 'NEW_OVERSEAS_SELLER',
-    'notify_url' => 'http://baidu.com',
-    'return_url' => '',
-    'trade_information' => [
-        'business_type' => '4',
-        'goods_info' => 'pencil^1',
-        'total_quantity' => 1
-    ]
-];
+// $info = [
+//     'subject' => 'kids clothing',
+//     'body' => 'goods',
+//     'out_trade_no' => '202011098899156',
+//     'currency' => 'USD',
+//     'total_fee' => '',
+//     'rmb_fee' => 0.08,
+//     'refer_url' =>  'http://baidu.com',
+//     // 'product_code' => 'NEW_WAP_OVERSEAS_SELLER',
+//     'product_code' => 'NEW_OVERSEAS_SELLER',
+//     'notify_url' => 'http://baidu.com',
+//     'return_url' => '',
+//     'trade_information' => [
+//         'business_type' => '4',
+//         'goods_info' => 'pencil^1',
+//         'total_quantity' => 1
+//     ]
+// ];
 
-$tmp = $aliPayService->qrCodePay($info);
-var_dump($tmp);
-die();
-
-
+// $tmp = $aliPayService->qrCodePay($info);
+// var_dump($tmp);
+// die();
 
 // //报关测试
 // $info = [
@@ -68,7 +65,6 @@ die();
 // var_dump($tmp);
 // die();
 
-
 // //退款测试
 // $info = [
 //     'out_return_no' => '',
@@ -85,7 +81,6 @@ die();
 // var_dump($tmp);
 // die();
 
-
 //支付单查询测试
 // $info = [
 //     'trade_no' => '202011098899155', //交易流水号
@@ -96,7 +91,6 @@ die();
 // var_dump($tmp);
 // die();
 
-
 // //报关查询测试
 // $info = [
 //     'out_request_nos' => '201506010001,201506010002,201506010003', //多个用英文逗号隔开
@@ -105,14 +99,11 @@ die();
 // var_dump($tmp);
 // die();
 
-
-
 //退款查询测试
-// $info = [
-//     'out_trade_no' => '111',
-//     'out_return_no' => '111',
-// ];
-// $tmp = $aliPayService->refundQuery($info);
-// var_dump($tmp);
-// die();
-
+$info = [
+    'out_trade_no'  => '111',
+    'out_return_no' => '111',
+];
+$tmp = $aliPayService->refundQuery($info);
+var_dump($tmp);
+die();

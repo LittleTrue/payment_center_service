@@ -76,18 +76,18 @@ class AliPayGlobalCredential extends BaseClient
      */
     public function buildRequestUrl($param)
     {
-        ksort($param);
+        // ksort($param);
 
         $string = '';
 
         foreach ($param as $key => $value) {
-            if ('' != $value && 'sign' != $value && 'sign_type' != $key) {
+            if ('' != $value) {
                 $string .= $key . '=' . $value . '&';
             }
         }
 
         $string = trim($string, '&');
-
+    echo $this->url . '?' . $string;;       
         return $this->url . '?' . $string;
     }
 

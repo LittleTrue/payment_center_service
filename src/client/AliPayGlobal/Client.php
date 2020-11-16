@@ -289,12 +289,12 @@ class Client extends AliPayGlobalCredential
 
         //生成发送数据
         $param = [
-            'service' => 'alipay.acquire.refund.query',
-            'partner' => $this->_partnerId,
-            '_input_charset' => 'UTF-8',
-            'sign_type' => 'MD5',
             'out_trade_no' => $data['out_trade_no'],
+            'partner' => $this->_partnerId,
+            'service' => 'alipay.acquire.refund.query',
+            '_input_charset' => 'UTF-8',
             'out_return_no' => $data['out_return_no'],
+            'sign_type' => 'MD5',            
         ];
 
         $param['sign'] = $this->MD5Sign($param);
