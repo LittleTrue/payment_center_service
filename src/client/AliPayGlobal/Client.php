@@ -159,7 +159,7 @@ class Client extends AliPayGlobalCredential
                 'notify_url' => 'require|max:200',
                 'out_return_no' => 'require|max:64',
                 'out_trade_no' => 'require|max:64',
-                'return_amount' => 'require',
+                // 'return_amount' => 'require',
                 'return_rmb_amount' => 'require',
                 'currency' => 'require|max:10',
                 'gmt_return' => 'require',
