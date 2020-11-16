@@ -5,7 +5,7 @@
  * @Author: Yan
  * @Date: 2020-11-09 10:37:39
  * @LastEditors: Yan
- * @LastEditTime: 2020-11-16 14:23:10
+ * @LastEditTime: 2020-11-16 17:52:41
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -99,11 +99,24 @@ $aliPayService = new AliPayGlobalService($ioc_con_app);
 // var_dump($tmp);
 // die();
 
-//退款查询测试
-$info = [
-    'out_trade_no'  => '111',
-    'out_return_no' => '111',
+// //退款查询测试
+// $info = [
+//     'out_trade_no'  => '111',
+//     'out_return_no' => '111',
+// ];
+// $tmp = $aliPayService->refundQuery($info);
+// var_dump($tmp);
+// die();
+
+//加密方法测试
+$param = [
+    'out_return_no'     => '',
+    'out_trade_no'      => '',
+    'return_amount'     => '',
+    'return_rmb_amount' => '',
+    'currency'          => '',
+    'gmt_return'        => date('Y-m-d H:i:s'),
+    'product_code'      => '',
+    'notify_url'        => '',
 ];
-$tmp = $aliPayService->refundQuery($info);
-var_dump($tmp);
-die();
+var_dump($aliPayService->getMd5Sign($param));

@@ -1,12 +1,13 @@
 <?php
 /*
- * @Description: 
- * @Version: 
+ * @Description:
+ * @Version:
  * @Author: Yan
  * @Date: 2020-11-09 10:32:36
  * @LastEditors: Yan
- * @LastEditTime: 2020-11-10 11:38:47
+ * @LastEditTime: 2020-11-16 17:23:52
  */
+
 namespace paymentCenter\paymentService;
 
 use paymentCenter\paymentClient\Application;
@@ -22,7 +23,7 @@ class AliPayGlobalService
     public function __construct(Application $app)
     {
         $this->_aliPayGlobal = $app['alipay_global'];
-        
+
         //从容器中根据相关调用的相关服务通路校验所需参数
 
         $config_param = $this->_aliPayGlobalConfig = $app['config'];
@@ -38,13 +39,13 @@ class AliPayGlobalService
     }
 
     /**
-     * 扫码支付
+     * 扫码支付.
      */
     public function qrCodePay($data, $signType = 'MD5')
     {
         if (empty($data)) {
             throw new ClientError('参数缺失');
-        } 
+        }
 
         if (empty($signType)) {
             throw new ClientError('签名类型缺失');
@@ -60,56 +61,72 @@ class AliPayGlobalService
     {
         if (empty($data)) {
             throw new ClientError('参数缺失');
-        } 
-        
+        }
+
         return $this->_aliPayGlobal->orderQuery($data);
     }
 
     /**
-     * 订单退款
+     * 订单退款.
      */
     public function orderRefund($data)
     {
         if (empty($data)) {
             throw new ClientError('参数缺失');
-        } 
-        
+        }
+
         return $this->_aliPayGlobal->orderRefund($data);
     }
 
     /**
-     * 订单海关报关
+     * 订单海关报关.
      */
     public function orderCustoms($data)
     {
         if (empty($data)) {
             throw new ClientError('参数缺失');
-        } 
-        
+        }
+
         return $this->_aliPayGlobal->orderCustoms($data);
     }
 
     /**
-     * 订单海关报关查询
+     * 订单海关报关查询.
      */
     public function orderCustomsQuery($data)
     {
         if (empty($data)) {
             throw new ClientError('参数缺失');
-        } 
-        
+        }
+
         return $this->_aliPayGlobal->orderCustomsQuery($data);
     }
 
     /**
-     * 退款查询
+     * 退款查询.
      */
     public function refundQuery($data)
     {
         if (empty($data)) {
             throw new ClientError('参数缺失');
-        } 
-        
+        }
+
         return $this->_aliPayGlobal->refundQuery($data);
+    }
+
+    /**
+     * md5加密.
+     */
+    public function getMd5Sign($data)
+    {
+        if (empty($data)) {
+            throw new ClientError('参数缺失');
+        }
+
+        if (!is_array($data)) {
+            throw new ClientError('参数必须是array');
+        }
+
+        return $this->_aliPayGlobal->getMd5Sign($data);
     }
 }
