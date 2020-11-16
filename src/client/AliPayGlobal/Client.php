@@ -206,8 +206,8 @@ class Client extends AliPayGlobalCredential
         // //验证参数
         $this->credentialValidate->setRule(
             [
-                'trade_no' => 'require|max:64',
-                'out_trade_no' => 'require|max:64'
+                'trade_no' => 'max:64',
+                'out_trade_no' => 'max:64'
             ]
         );
 
