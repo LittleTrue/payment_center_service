@@ -16,8 +16,6 @@ class Client extends AliPayGlobalCredential
      */
     protected $credentialValidate;
 
-    private $method;
-
     private $request_url = 'https://mapi.alipaydev.com/gateway.do';
 
     public function __construct(Application $app)
@@ -91,7 +89,9 @@ class Client extends AliPayGlobalCredential
         ];
 
         $param['sign'] = $this->MD5Sign($param);
-        return $this->buildRequestUrl($param);
+        $url           = $this->buildRequestUrl($param);
+
+        return ['response' => $url, 'pay_initial_request' => $url];
     }
 
     /**

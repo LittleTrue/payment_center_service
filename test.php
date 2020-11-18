@@ -17,8 +17,8 @@ $config = [
     'wx_apiclient_key'  => 'G:/wamp64/www/apiclient_key.pem',
     'wx_apiclient_cert' => 'G:/wamp64/www/apiclient_cert.pem',
 
-    'cert'  => 'G:/wamp64/www/WeChatCert.pem',
-    
+    'cert' => 'G:/wamp64/www/WeChatCert.pem',
+
     'APIv3_key' => 'HHainanxinyiguojikuajing20180814',
 ];
 
@@ -27,17 +27,17 @@ $ioc_con_app = new Application($config);
 $wechatService = new WeChatPayGlobalService($ioc_con_app);
 
 //业务参数
-// $info = [
-//     'body' => 'test',
-//     'attach' => '1',
-//     'order_no' => '10000001',
-//     'order_fee' => '1',
-//     'notify_url' => 'https://www.thinbug.com/q/34726530',
-// ];
+$info = [
+    'body'       => 'test',
+    'attach'     => '1',
+    'order_no'   => '10000001',
+    'order_fee'  => '1',
+    'notify_url' => 'https://www.thinbug.com/q/34726530',
+];
 
-// $tmp = $wechatService->qrCodePay($info);
-// var_dump($tmp);
-// die();
+$tmp = $wechatService->qrCodePay($info);
+var_dump($tmp);
+die();
 
 //订单查询
 // $info = [

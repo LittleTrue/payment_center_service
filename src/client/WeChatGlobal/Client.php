@@ -111,7 +111,7 @@ class Client extends WeChatPayGlobalCredential
         $param = $this->ToXml($payment_arr);
 
         //触发请求
-        return $this->requestXmlPost($param);
+        return ['response' => $this->requestXmlPost($param), 'pay_initial_request' => $param];
     }
 
     /**
@@ -421,6 +421,7 @@ class Client extends WeChatPayGlobalCredential
 
         $key = (new AesUtil($this->aesKey))->decryptToString($res['associated_data'], $res['nonce'], $res['ciphertext']);
 
-        var_dump($key);die();
+        var_dump($key);
+        die();
     }
 }
