@@ -16,7 +16,15 @@ class Client extends AliPayGlobalCredential
      */
     protected $credentialValidate;
 
-    private $request_url = 'https://mapi.alipaydev.com/gateway.do';
+    /**
+     * 测试环境
+     */
+    // private $request_url = 'https://mapi.alipaydev.com/gateway.do';
+
+    /**
+     * 生产环境
+     */
+    private $request_url = 'https://intlmapi.alipay.com/gateway.do';
 
     public function __construct(Application $app)
     {

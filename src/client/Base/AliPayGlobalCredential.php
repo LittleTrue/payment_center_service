@@ -109,11 +109,13 @@ class AliPayGlobalCredential extends BaseClient
         } else {
             $response = $this->FromXml($response);
 
-            if ('T' == $response['is_success']) {
-                return $response;
-            } else {
-                throw new ClientError('支付宝错误提示：' . $response['error']);
-            }
+            return $response;
+            
+            // if ('T' == $response['is_success']) {
+            //     return $response;
+            // } else {
+            //     throw new ClientError('支付宝错误提示：' . $response['error']);
+            // }
         }
     }
 
