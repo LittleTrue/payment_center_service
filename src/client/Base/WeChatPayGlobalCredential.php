@@ -45,7 +45,20 @@ class WeChatPayGlobalCredential extends BaseClient
 
         //证书参数
         $this->apiClientCert = $this->app['config']->get('wx_apiclient_cert');
+        if (is_file($this->apiClientCert)) {
+            $this->apiClientCert = file_get_contents($this->apiClientCert);
+        }
+        if (false === strpos($this->apiClientCert, "-----BEGIN CERTIFICATE-----")) {
+            $this->apiClientCert = "-----BEGIN CERTIFICATE-----\n" . $this->apiClientCert . "\n-----END CERTIFICATE-----";
+        }
+
         $this->apiClientKey  = $this->app['config']->get('wx_apiclient_key');
+        if (is_file($this->apiClientKey)) {
+            $this->apiClientKey = file_get_contents($this->apiClientKey);
+        }
+        if (false === strpos($this->apiClientKey, "-----BEGIN RSA PRIVATE KEY-----")) {
+            $this->apiClientKey = "-----BEGIN RSA PRIVATE KEY-----\n" . $this->apiClientKey . "\n-----END RSA PRIVATE KEY-----";
+        }
 
         //报关参数
         $this->custom   = $this->app['config']->get('custom');
@@ -200,7 +213,9 @@ class WeChatPayGlobalCredential extends BaseClient
      */
     public function sign($body, $method)
     {
-        $mch_private_key = file_get_contents($this->apiClientKey);
+        // $mch_private_key = file_get_contents($this->apiClientKey);
+        $mch_private_key = $this->apiClientKey;
+
         $url_parts = parse_url($this->url);
         $nonce = $this->getNonceStr();
         $timestamp = time();
@@ -230,7 +245,8 @@ class WeChatPayGlobalCredential extends BaseClient
 
         $sign = base64_encode($raw_sign);
         
-        $serial_no = openssl_x509_parse(file_get_contents($this->apiClientCert));
+        // $serial_no = openssl_x509_parse(file_get_contents($this->apiClientCert));
+        $serial_no = openssl_x509_parse($this->apiClientCert);
 
         $token = sprintf('mchid="%s",nonce_str="%s",timestamp="%d",serial_no="%s",signature="%s"',$this->mchId, $nonce, $timestamp, $serial_no['serialNumberHex'], $sign);
 
