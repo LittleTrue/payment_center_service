@@ -123,17 +123,6 @@ class Client extends WeChatPayGlobalCredential
         $this->url = $this->order_query_url;
 
         //验证参数
-        $this->credentialValidate->setRule(
-            [
-                'order_no' => 'require|max:32',
-                'pay_no'   => 'require|max:32',
-            ]
-        );
-
-        if (!$this->credentialValidate->check($data)) {
-            throw new ClientError('参数错误:' . $this->credentialValidate->getError());
-        }
-
         if (empty($data['order_no']) && empty($data['pay_no'])) {
             throw new ClientError('参数错误: order_no , pay_no not be null');
         }
@@ -285,7 +274,13 @@ class Client extends WeChatPayGlobalCredential
 
         $this->setHeaders(['User-Agent' => $this->mchId]);
 
-        return $this->httpPostJson();
+        $response = $this->httpPostJson();
+
+        if (!empty($response)) {
+            return json_decode($response, true);
+        }
+
+        return $response;
     }
 
     /**
@@ -298,7 +293,7 @@ class Client extends WeChatPayGlobalCredential
 
         $this->credentialValidate->setRule(
             [
-                'order_type' => 'require|in:IDCARD',
+                'order_type' => 'require',
                 'order_no'   => 'require|max:32',
             ]
         );
@@ -330,7 +325,13 @@ class Client extends WeChatPayGlobalCredential
 
         $this->setHeaders(['User-Agent' => $this->mchId]);
 
-        return $this->httpGet($this->url, $param_arr);
+        $response = $this->httpGet($this->url, $param_arr);
+
+        if (!empty($response)) {
+            return json_decode($response, true);
+        }
+
+        return $response;
     }
 
     /**
@@ -367,7 +368,13 @@ class Client extends WeChatPayGlobalCredential
 
         $this->setHeaders(['Authorization' => $auth]);
 
-        return $this->httpPostJson();
+        $response = $this->httpPostJson();
+
+        if (!empty($response)) {
+            return json_decode($response, true);
+        }
+
+        return $response;
     }
 
     /**
@@ -400,7 +407,13 @@ class Client extends WeChatPayGlobalCredential
 
         $this->setJsonParams($param_arr);
 
-        return $this->httpPostJson();
+        $response = $this->httpPostJson();
+
+        if (!empty($response)) {
+            return json_decode($response, true);
+        }
+
+        return $response;
     }
 
     /**

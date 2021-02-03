@@ -47,19 +47,22 @@ class WeChatPayGlobalCredential extends BaseClient
         $this->apiClientCert = $this->app['config']->get('wx_apiclient_cert');
         if (is_file($this->apiClientCert)) {
             $this->apiClientCert = file_get_contents($this->apiClientCert);
+        } else {
+            if (false === strpos($this->apiClientCert, "-----BEGIN CERTIFICATE-----")) {
+                $this->apiClientCert = "-----BEGIN CERTIFICATE-----\n" . $this->apiClientCert . "\n-----END CERTIFICATE-----";
+            }
         }
-        if (false === strpos($this->apiClientCert, "-----BEGIN CERTIFICATE-----")) {
-            $this->apiClientCert = "-----BEGIN CERTIFICATE-----\n" . $this->apiClientCert . "\n-----END CERTIFICATE-----";
-        }
+        
 
         $this->apiClientKey  = $this->app['config']->get('wx_apiclient_key');
         if (is_file($this->apiClientKey)) {
             $this->apiClientKey = file_get_contents($this->apiClientKey);
+        } else {
+            if (false === strpos($this->apiClientKey, "-----BEGIN RSA PRIVATE KEY-----")) {
+                $this->apiClientKey = "-----BEGIN RSA PRIVATE KEY-----\n" . $this->apiClientKey . "\n-----END RSA PRIVATE KEY-----";
+            }
         }
-        if (false === strpos($this->apiClientKey, "-----BEGIN RSA PRIVATE KEY-----")) {
-            $this->apiClientKey = "-----BEGIN RSA PRIVATE KEY-----\n" . $this->apiClientKey . "\n-----END RSA PRIVATE KEY-----";
-        }
-
+        
         //报关参数
         $this->custom   = $this->app['config']->get('custom');
         $this->customNo = $this->app['config']->get('custom_no');
@@ -209,18 +212,17 @@ class WeChatPayGlobalCredential extends BaseClient
     /**
      * 签名
      * 方法为 GET 时， body传空/其他方法传json格式字符串
-     * method GET POST PUT
+     * method GET POST PUT.
      */
     public function sign($body, $method)
     {
-        // $mch_private_key = file_get_contents($this->apiClientKey);
         $mch_private_key = $this->apiClientKey;
 
         $url_parts = parse_url($this->url);
-        $nonce = $this->getNonceStr();
+        $nonce     = $this->getNonceStr();
         $timestamp = time();
 
-        $canonical_url = ($url_parts['path'] . (!empty($url_parts['query']) ? "?${url_parts['query']}" : ""));
+        $canonical_url = ($url_parts['path'] . (!empty($url_parts['query']) ? "?${url_parts['query']}" : ''));
 
         switch ($method) {
             case 'GET':
@@ -231,24 +233,22 @@ class WeChatPayGlobalCredential extends BaseClient
                 $body = json_encode($body);
                 break;
             default:
-                # code...
+                // code...
                 break;
         }
 
-        $message = $method ."\n".
-            $canonical_url."\n".
-            $timestamp ."\n".
-            $nonce ."\n".
-            $body."\n";
+        $message = $method . "\n" .
+            $canonical_url . "\n" .
+            $timestamp . "\n" .
+            $nonce . "\n" .
+            $body . "\n";
 
         openssl_sign($message, $raw_sign, $mch_private_key, 'sha256WithRSAEncryption');
-
         $sign = base64_encode($raw_sign);
-        
-        // $serial_no = openssl_x509_parse(file_get_contents($this->apiClientCert));
+
         $serial_no = openssl_x509_parse($this->apiClientCert);
 
-        $token = sprintf('mchid="%s",nonce_str="%s",timestamp="%d",serial_no="%s",signature="%s"',$this->mchId, $nonce, $timestamp, $serial_no['serialNumberHex'], $sign);
+        $token = sprintf('mchid="%s",nonce_str="%s",timestamp="%d",serial_no="%s",signature="%s"', $this->mchId, $nonce, $timestamp, $serial_no['serialNumberHex'], $sign);
 
         return 'WECHATPAY2-SHA256-RSA2048 ' . $token;
     }
@@ -256,7 +256,6 @@ class WeChatPayGlobalCredential extends BaseClient
     public function rsa($content)
     {
         openssl_public_encrypt($content, $encrypted, file_get_contents($this->cert));
-        $encrypted = base64_encode($encrypted);  
-        return $encrypted;
+        return base64_encode($encrypted);
     }
 }
