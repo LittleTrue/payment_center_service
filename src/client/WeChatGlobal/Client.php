@@ -154,8 +154,6 @@ class Client extends WeChatPayGlobalCredential
         //验证参数
         $this->credentialValidate->setRule(
             [
-                'order_no'        => 'requireIf,pay_no=|max:32',
-                'pay_no'          => 'requireIf,order_no=|max:32',
                 'refund_no'       => 'require|max:32',
                 'total_fee'       => 'require',
                 'refund_fee'      => 'require',
@@ -178,7 +176,7 @@ class Client extends WeChatPayGlobalCredential
             'mch_id'          => $this->mchId,
             'nonce_str'       => $this->getNonceStr(),
             'transaction_id'  => isset($data['pay_no']) ? $data['pay_no'] : '',
-            'out_trade_no'    => isset($data['EntOrder']) ? $data['order_no'] : '',
+            'out_trade_no'    => isset($data['order_no']) ? $data['order_no'] : '',
             'out_refund_no'   => $data['refund_no'],
             'total_fee'       => $data['total_fee'],
             'refund_fee'      => $data['refund_fee'],

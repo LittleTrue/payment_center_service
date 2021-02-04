@@ -58,9 +58,9 @@ class BaseClient
         $this->app = $app;
 
         $this->headers = [
-            'Content-Type'  => 'application/json',
-            'timestamp'     => time(),
-            'Accept'        => 'application/json'
+            'Content-Type' => 'application/json',
+            'timestamp'    => time(),
+            'Accept'       => 'application/json',
         ];
     }
 
@@ -176,7 +176,27 @@ class BaseClient
         return $this->headers;
     }
 
+    public function setHeaders(array $param)
+    {
+        $this->headers[key($param)] = $param[key($param)];
+    }
 
+    /**
+     * 临时生成的证书文件夹名.
+     */
+    public function getCertFileName($content)
+    {
+        return md5(mb_substr($content, 40, 50)) . '.pem';
+    }
+
+    /**
+     * 按照证书路径生成并存储证书.
+     */
+    public function generateTmpPathByContent($file_path_name, $content)
+    {
+        file_put_contents($file_path_name, $content);
+        return $file_path_name;
+    }
 
     /**
      * @throws ClientError
@@ -190,7 +210,7 @@ class BaseClient
     }
 
     /**
-     * set SSL CERT.
+     * set SSL CERT 针对需要在请求中携带双向通讯证书的支付机制的特殊处理.
      *
      * @return array
      */
@@ -200,31 +220,34 @@ class BaseClient
         if (empty($this->_sslCert) || empty($this->_sslKey)) {
             throw new ClientError('证书文件缺失。');
         }
+        //获取当前系统创建临时文件夹的目录
+        $cert_file_path = sys_get_temp_dir();
 
         if (!is_file($this->_sslCert)) {
-            $cert_key_str = chunk_split($this->_sslCert, 64, "\n");
+            //预处理一次除本来就传入路径, 现有的自动路径生成逻辑是否有生成的文件路径判断
+            $cert_file = $cert_file_path . '/' . $this->getCertFileName($this->_sslCert);
 
-            $cert_key_data = "-----BEGIN RSA PRIVATE KEY-----\n{$cert_key_str}-----END RSA PRIVATE KEY-----\n";
-
-            $this->_sslCert = $this->getTmpPathByContent($cert_key_data);
+            if (file_exists($cert_file)) {
+                $this->_sslCert = $cert_file;
+            } else {
+                $this->_sslCert = $this->generateTmpPathByContent($cert_file, $this->_sslCert);
+            }
         }
 
         if (!is_file($this->_sslKey)) {
-            $ssl_key_str = chunk_split($this->_sslKey, 64, "\n");
+            //预处理一次除本来就传入路径, 现有的自动路径生成逻辑是否有生成的文件路径判断
+            $cert_key_file = $cert_file_path . '/' . $this->getCertFileName($this->_sslKey);
 
-            $ssl_key_data = "-----BEGIN RSA PRIVATE KEY-----\n{$ssl_key_str}-----END RSA PRIVATE KEY-----\n";
-
-            $this->_sslCert = $this->getTmpPathByContent($ssl_key_data);
+            if (file_exists($cert_key_file)) {
+                $this->_sslKey = $cert_key_file;
+            } else {
+                $this->_sslKey = $this->generateTmpPathByContent($cert_key_file, $this->_sslKey);
+            }
         }
-
+        
         $options[RequestOptions::SSL_KEY] = $this->_sslKey;
         $options[RequestOptions::CERT]    = $this->_sslCert;
 
         return $options;
-    }
-
-    public function setHeaders(array $param)
-    {
-        $this->headers[key($param)] = $param[key($param)];
     }
 }

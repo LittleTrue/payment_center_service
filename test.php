@@ -109,36 +109,36 @@ $wechatService = new WeChatPayGlobalService($ioc_con_app);
 // die();
 
 //订单查询
-$info = [
-    'order_no' => '2102014046316388',
-];
-
-try {
-    $tmp = $wechatService->orderQuery($info);
-} catch(Exception $e) {
-    var_dump($e->getMessage());
-    die();
-}
-var_dump($tmp);
-die();
-
-//退款
 // $info = [
-//     'order_no'          => '10000001',
-//     'refund_no'         => 'R10000001',
-//     'total_fee'         => '1',
-//     'refund_fee'        => '1',
-//     'refund_fee_type'   => '',
-//     'refund_desc'       => '123',
+//     'order_no' => '2102014046316388',
 // ];
 
 // try {
-//     $tmp = $wechatService->orderRefund($info);
+//     $tmp = $wechatService->orderQuery($info);
 // } catch(Exception $e) {
-//     var_dump($e->getMessage());die();
+//     var_dump($e->getMessage());
+//     die();
 // }
-// echo json_encode($tmp);
+// var_dump($tmp);
 // die();
+
+//退款
+$info = [
+    'order_no'          => '10000001',
+    'refund_no'         => 'R10000001',
+    'total_fee'         => '1',
+    'refund_fee'        => '1',
+    'refund_fee_type'   => '',
+    'refund_desc'       => '123',
+];
+
+try {
+    $tmp = $wechatService->orderRefund($info);
+} catch(Exception $e) {
+    var_dump($e->getMessage());die();
+}
+echo json_encode($tmp);
+die();
 
 //退款查询
 // $info = [
