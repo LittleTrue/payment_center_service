@@ -68,6 +68,13 @@ class WeChatPayGlobalCredential extends BaseClient
         $this->customNo = $this->app['config']->get('custom_no');
 
         $this->cert = $this->app['config']->get('cert');
+        if (is_file($this->cert)) {
+            $this->cert = file_get_contents($this->cert);
+        } else {
+            if (false === strpos($this->cert, "-----BEGIN CERTIFICATE-----")) {
+                $this->cert = "-----BEGIN CERTIFICATE-----\n" . $this->cert . "\n-----END CERTIFICATE-----";
+            }
+        }
 
         $this->aesKey = $this->app['config']->get('APIv3_key');
     }
@@ -255,7 +262,7 @@ class WeChatPayGlobalCredential extends BaseClient
 
     public function rsa($content)
     {
-        openssl_public_encrypt($content, $encrypted, file_get_contents($this->cert));
+        openssl_public_encrypt($content, $encrypted, $this->cert);
         return base64_encode($encrypted);
     }
 }

@@ -383,7 +383,7 @@ class Client extends WeChatPayGlobalCredential
         //设置方法接口路由
         $this->url = $this->verify_person_url;
 
-        $serial_no = openssl_x509_parse(file_get_contents($this->cert));
+        $serial_no = openssl_x509_parse($this->cert);
 
         $param_arr = [
             'appid'               => $this->appId,
