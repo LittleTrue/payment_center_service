@@ -133,15 +133,24 @@ class Client extends AliPayGlobalCredential
             'partner'               => $this->_partnerId,
             '_input_charset'        => 'UTF-8',
             'sign_type'             => 'MD5',
+            //触发拆单申报时,推时保持customs_place、merchant_customs_name、out_request_no 一致
+            //out_request_no这个字段是偏向请求编号的字段, 不过业务也可以将对应的订单/子订单传入当做唯一编号,方便之后触发查询也用订单号
             'out_request_no'        => $data['out_request_no'],
             'trade_no'              => $data['trade_no'],
             'merchant_customs_code' => $data['merchant_customs_code'],
-            'amount'                => $data['amount'],
+            'amount'                => $data['amount'],//支付宝触发拆单申报的时候是传子订单的申报金额
             'customs_place'         => $data['customs_place'],
             'merchant_customs_name' => $data['merchant_customs_name'],
             'buyer_name'            => isset($data['buyer_name']) ? $data['buyer_name'] : '',
             'buyer_id_no'           => isset($data['buyer_id_no']) ? $data['buyer_id_no'] : '',
         ];
+
+        //如果有传子订单号, 则控制拆单条件, 并透传
+        if (isset($data['sub_order_no']) && !empty($data['sub_order_no'])) {
+            $param['is_split'] = 'T';
+            //子订单编号为,子支付单号会在相应的trade_no获取
+            $param['sub_out_biz_no'] = $data['sub_order_no'];
+        }
 
         $param['sign'] = $this->MD5Sign($param);
 
