@@ -41,6 +41,7 @@ $config = [
     e4H3h+oiWXUyCT0kgux5qLwrLFcq6v0fC7E/D/Ha2GxpZmIgTzEJzuaMnIBSL/wr
     W5HNdbmwFlj1xG7+AygydOUqKSKW9o7TkeRia6eG2jOxsLHTzsKsZaiB1FBrf8hd
     NqER0pRIpUZjOUOvFmMmx6Y=',
+
     'wx_apiclient_cert' => 'MIID9jCCAt6gAwIBAgIUQuP+8G/dOLh1tOO1euY1ICttHIgwDQYJKoZIhvcNAQEL
     BQAwXjELMAkGA1UEBhMCQ04xEzARBgNVBAoTClRlbnBheS5jb20xHTAbBgNVBAsT
     FFRlbnBheS5jb20gQ0EgQ2VudGVyMRswGQYDVQQDExJUZW5wYXkuY29tIFJvb3Qg
@@ -123,22 +124,22 @@ $wechatService = new WeChatPayGlobalService($ioc_con_app);
 // die();
 
 //退款
-$info = [
-    'order_no'          => '10000001',
-    'refund_no'         => 'R10000001',
-    'total_fee'         => '1',
-    'refund_fee'        => '1',
-    'refund_fee_type'   => '',
-    'refund_desc'       => '123',
-];
+// $info = [
+//     'order_no'          => '10000001',
+//     'refund_no'         => 'R10000001',
+//     'total_fee'         => '1',
+//     'refund_fee'        => '1',
+//     'refund_fee_type'   => '',
+//     'refund_desc'       => '123',
+// ];
 
-try {
-    $tmp = $wechatService->orderRefund($info);
-} catch(Exception $e) {
-    var_dump($e->getMessage());die();
-}
-echo json_encode($tmp);
-die();
+// try {
+//     $tmp = $wechatService->orderRefund($info);
+// } catch(Exception $e) {
+//     var_dump($e->getMessage());die();
+// }
+// echo json_encode($tmp);
+// die();
 
 //退款查询
 // $info = [
@@ -161,32 +162,36 @@ die();
 // die();
 
 //支付单报关
-// $info = [
-//     'order_no'   => '10000001',
-//     'pay_no' => '4200000738202011092400680961',
-// ];
-
-// try {
-//     $tmp = $wechatService->orderCustoms($info);
-// } catch(Exception $e) {
-//     var_dump($e->getMessage());die();
-// }
-// var_dump($tmp);die();
-// die();
-
-//查询报关
 $info = [
-    'order_no'   => '10000001',
-    'order_type' => 'out_trade_no', //out_trade_no-商家订单号 transaction_id-微信支付订单号 sub_order_no-商家子订单号 sub_order_id-微信子订单号
+    'order_no'   => '2102199620564403',
+    'pay_no' => '4200000939202102197566191004',
+    'sub_order_no' => '21021996205644031',
+    'sub_order_fee' => '1',
+    'product_fee' => '1',
+    'transport_fee' => '0',
 ];
 
 try {
-    $tmp = $wechatService->orderCustomsQuery($info);
+    $tmp = $wechatService->orderCustoms($info);
 } catch(Exception $e) {
     var_dump($e->getMessage());die();
 }
-var_dump(json_decode($tmp));die();
+var_dump($tmp);die();
 die();
+
+//查询报关
+// $info = [
+//     'order_no'   => '10000001',
+//     'order_type' => 'out_trade_no', //out_trade_no-商家订单号 transaction_id-微信支付订单号 sub_order_no-商家子订单号 sub_order_id-微信子订单号
+// ];
+
+// try {
+//     $tmp = $wechatService->orderCustomsQuery($info);
+// } catch(Exception $e) {
+//     var_dump($e->getMessage());die();
+// }
+// var_dump(json_decode($tmp));die();
+// die();
 
 //身份验证
 // $info = [

@@ -264,6 +264,37 @@ class Client extends WeChatPayGlobalCredential
             'fee_type'            => 'CNY',
         ];
 
+        //如果有传子订单号, 则控制拆单条件, 并透传
+        if (isset($data['sub_order_no']) && !empty($data['sub_order_no'])) {
+            $param_arr['sub_order_no'] = $data['sub_order_no'];
+
+            if (empty($data['sub_order_fee'])) {
+                throw new ClientError('拆单必须传子订单金额且不能为0。');
+            }
+
+            $order_fee     = $data['sub_order_fee'];
+            $transport_fee = 0;
+            $goods_fee     = 0;
+
+            if (isset($data['product_fee'])) {
+                $param_arr['product_fee'] = $data['product_fee'];
+                $goods_fee                = $data['product_fee'];
+            }
+
+            if (isset($data['transport_fee'])) {
+                $param_arr['transport_fee'] = $data['transport_fee'];
+                $transport_fee              = $data['transport_fee'];
+            }
+
+            if (($goods_fee + $transport_fee) != $order_fee) {
+                throw new ClientError('拆单商品和物流金额不等于子订单金额。');
+            }
+
+            $param_arr['order_fee']     = $data['sub_order_fee'];
+            $param_arr['product_fee']   = $data['product_fee'];
+            $param_arr['transport_fee'] = $data['transport_fee'];
+        }
+
         $auth = $this->sign($param_arr, 'POST');
 
         $this->setJsonParams($param_arr);
