@@ -20,7 +20,7 @@ class WeChatPayService
     }
 
     /**
-     * 扫码支付.
+     * 微信H5扫码支付.
      */
     public function qrCodePay(array $info)
     {

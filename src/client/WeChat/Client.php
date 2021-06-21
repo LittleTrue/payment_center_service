@@ -23,7 +23,7 @@ class Client extends BaseClient
     }
 
     /**
-     * 调拨单同步.
+     * 微信H5扫码支付.
      */
     public function qrCodePay(array $infos)
     {
