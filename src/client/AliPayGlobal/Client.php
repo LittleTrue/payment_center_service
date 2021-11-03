@@ -82,8 +82,6 @@ class Client extends AliPayGlobalCredential
             'out_trade_no'   => $data['out_trade_no'],
             'partner'        => $this->_partnerId,
             'product_code'   => $data['product_code'],
-            // 'qr_pay_mode' => 4,
-            // 'qrcode_width' => 200,//最好由客户指定吧
             'service'           => 'create_forex_trade',
             'sign_type'         => 'MD5',
             'subject'           => $data['subject'],

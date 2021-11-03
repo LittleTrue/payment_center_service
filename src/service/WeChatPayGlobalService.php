@@ -6,7 +6,15 @@ use Exception;
 use paymentCenter\paymentClient\Application;
 
 /**
- * 微信支付集成服务.
+ * 微信国际  支付通路集成服务.
+ *
+ * 功能受限的实现:
+ * 1、MD5模式
+ * 2、非服务商
+ *
+ * 所支持的支付功能:
+ * -- 通用功能(支付结果查询、退款、退款结果查询)
+ * -- NATIVE支付:  PC扫码支付.
  */
 class WeChatPayGlobalService
 {
@@ -48,7 +56,7 @@ class WeChatPayGlobalService
     {
         if (empty($data)) {
             throw new Exception('参数缺失');
-        } 
+        }
 
         if (empty($signType)) {
             throw new Exception('签名类型缺失');
@@ -64,11 +72,7 @@ class WeChatPayGlobalService
     {
         if (empty($data)) {
             throw new Exception('参数缺失');
-    }
-
-        // if (empty($signType)) {
-        //     throw new Exception('签名类型缺失');
-        // }
+        }
 
         return $this->_weChatPayGlobal->orderQuery($data, $signType = 'MD5');
     }
